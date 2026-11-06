@@ -13,13 +13,14 @@
     <link rel="stylesheet" href="../node_modules/@fontsource/montserrat/500.css" />
     <link rel="stylesheet" href="../node_modules/@fontsource/montserrat/600.css" />
     <link rel="stylesheet" href="../node_modules/@fontsource/montserrat/700.css" />
+    <link rel="stylesheet" href="../node_modules/@fontsource/montserrat/800.css" />
 
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
     <div class="app">
-      <!-- ===== Menú lateral ===== -->
-      <nav class="menu-lateral">
+      <!-- ===== Barra superior ===== -->
+      <header class="barra">
         <div class="marca">
           <span class="logo">MG</span>
           <div>
@@ -28,11 +29,13 @@
             <small>Gestión de socios</small>
           </div>
         </div>
-        <button class="nav-boton" type="button" data-vista="ingreso">Ingreso</button>
-        <button class="nav-boton" type="button" data-vista="socios">Socios</button>
-        <button class="nav-boton" type="button" data-vista="pagos">Pagos</button>
-        <button class="nav-boton" type="button" data-vista="planes">Planes</button>
-      </nav>
+        <nav class="pestanas" aria-label="Secciones">
+          <button class="nav-boton" type="button" data-vista="ingreso">Ingreso</button>
+          <button class="nav-boton" type="button" data-vista="socios">Socios</button>
+          <button class="nav-boton" type="button" data-vista="pagos">Pagos</button>
+          <button class="nav-boton" type="button" data-vista="planes">Planes</button>
+        </nav>
+      </header>
 
       <main class="contenido">
         <!-- ===== Vista: Ingreso (recepción) ===== -->

@@ -1,46 +1,58 @@
 /* =====================================================================
    Mi Gimnasio — estilos
-   Dirección: cartelería de sala de pesas. Menú negro como el piso de
-   caucho, amarillo de seguridad solo para lo importante, títulos
-   en Montserrat bien negrita, y los estados con los
-   colores de los discos olímpicos (verde, amarillo, rojo).
+   Dirección: "planilla de entrenamiento". Tinta negra sobre blanco,
+   azul de colchoneta como único acento (acción, selección y foco), y los
+   números como protagonistas en Montserrat extra negrita, como en una
+   pizarra de marcas. Los estados de la cuota usan los colores de los
+   discos olímpicos: verde, ámbar, rojo y gris.
+
+   Principios:
+   1. Líneas finas en lugar de cajas pesadas: bordes de 1px, radio 8px,
+      cero sombras (salvo el diálogo y el aviso flotante).
+   2. Un protagonista por pantalla (el DNI, la fecha de vencimiento, el total).
+   3. El azul solo marca dónde se puede actuar.
    ===================================================================== */
 
-/* ---------- Variables (cambiando estas cambia todo el sistema) ---------- */
+/* ---------- Variables: cambiando estas cambia todo el sistema ---------- */
 :root {
   /* Superficies */
-  --caucho: #16181b;          /* menú lateral y cabecera de la ficha */
-  --caucho-claro: #24272c;    /* hover en el menú */
-  --cemento: #eceeef;         /* fondo general */
-  --superficie: #ffffff;      /* paneles y tablas */
-  --superficie-gris: #f6f7f8; /* encabezado de tablas */
-  --linea: #d6dadf;
-  --linea-suave: #e9ebee;
+  --fondo: #f1f3f5;
+  --superficie: #ffffff;
+  --superficie-suave: #f7f8fa;
+  --linea: #dde1e6;
+  --linea-suave: #eceef1;
 
-  /* Texto */
-  --texto: #15171a;
-  --texto-suave: #545b64;
-  --texto-tenue: #6b7280;
+  /* Tinta */
+  --tinta: #12161c;          /* texto principal y barra superior */
+  --tinta-clara: #1d232b;    /* hover en la barra */
+  --texto-suave: #57606b;
+  --texto-tenue: #6b7480;
 
-  /* Acento: amarillo de seguridad */
-  --amarillo: #ffcc00;
-  --amarillo-hover: #f2c100;
-  --amarillo-fondo: #fff6cc;
+  /* Acento: azul colchoneta */
+  --acento: #2340d9;
+  --acento-hover: #1a32b4;
+  --acento-fondo: #eef1ff;
+  --acento-foco: rgba(35, 64, 217, 0.3);
 
-  /* Estados (colores de los discos) */
+  /* Estados de la cuota (colores de los discos) */
   --verde: #166534;
-  --verde-fondo: #dcf3e4;
-  --ambar: #854d0e;
-  --ambar-fondo: #fff0bf;
-  --rojo: #b91c1c;
-  --rojo-fondo: #fde3e3;
+  --verde-fondo: #e3f5e9;
+  --verde-fuerte: #1f9d55;
+  --ambar: #8a4b05;
+  --ambar-fondo: #fff2cc;
+  --ambar-fuerte: #e0a100;
+  --rojo: #b42318;
+  --rojo-fondo: #fde8e6;
+  --rojo-fuerte: #d92d20;
+  --gris-fondo: #eceef1;
+  --gris-fuerte: #9aa1ab;
 
   /* Tipografía */
-  --fuente-texto: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
-  --fuente-titulos: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+  --fuente: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
 
   /* Formas */
-  --radio: 4px;
+  --radio: 8px;
+  --radio-chico: 6px;
 }
 
 /* ---------- Base ---------- */
@@ -59,11 +71,11 @@ body {
 }
 
 body {
-  font-family: var(--fuente-texto);
+  font-family: var(--fuente);
   font-size: 14px;
   line-height: 1.5;
-  color: var(--texto);
-  background: var(--cemento);
+  color: var(--tinta);
+  background: var(--fondo);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -80,127 +92,136 @@ button {
 }
 
 h1,
-h2 {
+h2,
+h3 {
   margin: 0;
-  font-family: var(--fuente-titulos);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 h1 {
-  font-size: 1.75rem;
+  font-size: 1.9rem;
+  font-weight: 800;
 }
 
 h2 {
   font-size: 1.15rem;
+  font-weight: 700;
+}
+
+h3 {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 /* Foco visible para quien usa el teclado */
 :focus-visible {
-  outline: 2px solid var(--texto);
+  outline: 3px solid var(--acento-foco);
   outline-offset: 2px;
 }
 
 /* ========== Estructura general ========== */
 .app {
   display: grid;
-  grid-template-columns: 232px 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
   height: 100%;
 }
 
-/* ---------- Menú lateral ---------- */
-.menu-lateral {
+/* ---------- Barra superior ---------- */
+.barra {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 22px 0;
-  background: var(--caucho);
-  color: #c9cdd2;
+  align-items: stretch;
+  gap: 40px;
+  height: 64px;
+  padding: 0 32px;
+  background: var(--tinta);
 }
 
 .marca {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 20px 28px;
 }
 
+/* El logo es un disco de pesas: círculo azul con el aro interior marcado */
 .logo {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  border-radius: var(--radio);
-  background: var(--amarillo);
-  color: var(--caucho);
-  font-family: var(--fuente-titulos);
-  font-size: 1.01rem;
-  font-weight: 700;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--acento);
+  box-shadow:
+    inset 0 0 0 4px var(--acento),
+    inset 0 0 0 5px rgba(255, 255, 255, 0.45);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .marca strong {
   display: block;
-  font-family: var(--fuente-titulos);
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1;
   color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .marca small {
   display: block;
-  margin-top: 4px;
-  color: #8b9199;
-  font-size: 0.8rem;
+  color: #8f98a3;
+  font-size: 0.75rem;
+}
+
+.pestanas {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
 }
 
 .nav-boton {
   position: relative;
-  width: 100%;
-  padding: 11px 20px;
+  padding: 0 16px;
   border: none;
   background: transparent;
-  color: #c9cdd2;
-  text-align: left;
-  font-family: var(--fuente-titulos);
-  font-size: 0.94rem;
+  color: #aab2bd;
+  font-size: 0.92rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
-  transition: background-color 0.15s, color 0.15s;
+  transition: color 0.15s, background-color 0.15s;
 }
 
 .nav-boton:hover {
-  background: var(--caucho-claro);
   color: #fff;
+  background: var(--tinta-clara);
 }
 
 .nav-boton.activo {
-  background: var(--caucho-claro);
   color: #fff;
 }
 
-/* Barra amarilla a la izquierda de la sección actual */
-.nav-boton.activo::before {
+/* Raya azul debajo de la sección actual */
+.nav-boton.activo::after {
   content: '';
   position: absolute;
-  top: 6px;
-  bottom: 6px;
-  left: 0;
-  width: 4px;
-  background: var(--amarillo);
+  right: 12px;
+  bottom: 0;
+  left: 12px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--acento);
 }
 
 .nav-boton:focus-visible {
-  outline: 2px solid var(--amarillo);
-  outline-offset: -2px;
+  outline-offset: -4px;
 }
 
 /* ---------- Contenido ---------- */
 .contenido {
   min-width: 0;
-  padding: 28px 32px;
+  padding: 28px 32px 40px;
   overflow-y: auto;
 }
 
@@ -208,17 +229,16 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  max-width: 1280px;
+  max-width: 1360px;
+  margin: 0 auto;
 }
 
-/* Título con raya gruesa abajo, como un cartel */
 .encabezado-vista {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 14px;
-  border-bottom: 3px solid var(--texto);
+  min-height: 44px;
 }
 
 .barra-herramientas {
@@ -229,13 +249,14 @@ h2 {
 
 .buscador {
   flex: 1;
-  max-width: 400px;
+  max-width: 420px;
 }
 
 .contador {
   margin-left: auto;
   color: var(--texto-suave);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -244,7 +265,7 @@ h2 {
   align-items: center;
   gap: 8px;
   color: var(--texto-suave);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   cursor: pointer;
 }
 
@@ -265,8 +286,9 @@ h2 {
   padding: 8px 16px;
   border: 1px solid transparent;
   border-radius: var(--radio);
-  font-weight: 600;
-  transition: background-color 0.15s, border-color 0.15s;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .boton:active {
@@ -279,30 +301,31 @@ h2 {
   transform: none;
 }
 
-/* Amarillo: la acción principal de cada pantalla */
+/* Azul: la acción principal de cada pantalla */
 .boton-primario {
-  background: var(--amarillo);
-  border-color: var(--amarillo);
-  color: var(--texto);
+  background: var(--acento);
+  border-color: var(--acento);
+  color: #fff;
 }
 
 .boton-primario:hover {
-  background: var(--amarillo-hover);
-  border-color: var(--amarillo-hover);
+  background: var(--acento-hover);
+  border-color: var(--acento-hover);
 }
 
 .boton-secundario {
   background: var(--superficie);
   border-color: var(--linea);
+  color: var(--tinta);
 }
 
 .boton-secundario:hover {
-  border-color: var(--texto);
+  border-color: var(--tinta);
 }
 
 .boton-peligro {
   background: var(--superficie);
-  border-color: #f0b8b8;
+  border-color: #f3c3be;
   color: var(--rojo);
 }
 
@@ -311,24 +334,31 @@ h2 {
   border-color: var(--rojo);
 }
 
-/* Acciones dentro de las tablas */
+.boton-ancho {
+  width: 100%;
+  min-height: 46px;
+  font-size: 0.95rem;
+}
+
+/* Acciones chicas dentro de tablas y listas */
 .boton-texto {
   padding: 4px 8px;
   border: none;
-  border-radius: var(--radio);
+  border-radius: var(--radio-chico);
   background: transparent;
-  color: var(--texto);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: var(--linea);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
+  color: var(--acento);
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .boton-texto:hover {
-  background: var(--amarillo-fondo);
-  text-decoration-color: var(--amarillo);
+  background: var(--acento-fondo);
+}
+
+.boton-mini {
+  justify-self: end;
+  padding: 2px 6px;
+  font-size: 0.76rem;
 }
 
 /* ========== Campos ========== */
@@ -336,10 +366,11 @@ input,
 select,
 textarea {
   min-height: 40px;
-  padding: 8px 11px;
+  padding: 8px 12px;
   border: 1px solid var(--linea);
   border-radius: var(--radio);
   background: var(--superficie);
+  font-size: 0.9rem;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -350,21 +381,21 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #9aa0a8;
+  color: #9aa1ab;
 }
 
 input:hover,
 select:hover,
 textarea:hover {
-  border-color: #b5bbc3;
+  border-color: #bfc5cd;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--texto);
-  box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.6);
+  border-color: var(--acento);
+  box-shadow: 0 0 0 3px var(--acento-foco);
 }
 
 input[type='checkbox'] {
@@ -372,7 +403,7 @@ input[type='checkbox'] {
   height: 18px;
   min-height: 0;
   padding: 0;
-  accent-color: var(--texto);
+  accent-color: var(--acento);
 }
 
 /* ========== Paneles y tablas ========== */
@@ -385,30 +416,30 @@ input[type='checkbox'] {
 
 .panel-tabla {
   padding: 0;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .tabla {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.93rem;
+  font-size: 0.86rem;
 }
 
 .tabla th {
-  padding: 10px 14px;
-  background: var(--superficie-gris);
+  padding: 12px 14px;
   border-bottom: 1px solid var(--linea);
   text-align: left;
-  color: var(--texto-suave);
-  font-family: var(--fuente-titulos);
-  font-size: 0.78rem;
-  font-weight: 600;
+  color: var(--texto-tenue);
+  font-size: 0.74rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .tabla td {
-  padding: 11px 14px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--linea-suave);
+  white-space: nowrap;
 }
 
 .tabla tbody tr:last-child td {
@@ -416,7 +447,7 @@ input[type='checkbox'] {
 }
 
 .tabla td strong {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .tabla .derecha {
@@ -424,40 +455,57 @@ input[type='checkbox'] {
   font-variant-numeric: tabular-nums;
 }
 
+/* El nombre del plan es el único dato que puede usar dos renglones */
+#tabla-socios td:nth-child(3),
+#tabla-pagos td:nth-child(3) {
+  min-width: 150px;
+  white-space: normal;
+}
+
 .tabla-seleccionable tbody tr {
   cursor: pointer;
 }
 
 .tabla-seleccionable tbody tr:hover {
-  background: #f7f8f9;
+  background: var(--superficie-suave);
 }
 
 .tabla tr.seleccionada,
 .tabla tr.seleccionada:hover {
-  background: var(--amarillo-fondo);
+  background: var(--acento-fondo);
 }
 
-/* Marca amarilla en la fila elegida */
+/* Marca azul en la fila elegida */
 .tabla tr.seleccionada td:first-child {
-  box-shadow: inset 4px 0 0 var(--amarillo);
+  box-shadow: inset 3px 0 0 var(--acento);
 }
 
-.tabla tr.inactivo td {
+.tabla tr.inactivo td,
+.tabla tr.anulado td {
   color: var(--texto-tenue);
+}
+
+.tabla tr.anulado td.monto {
+  text-decoration: line-through;
 }
 
 .acciones-fila {
   text-align: right;
-  white-space: nowrap;
 }
 
 .vacio {
   width: 100%;
   margin: 0;
-  padding: 32px 16px;
+  padding: 36px 16px;
   text-align: center;
   color: var(--texto-tenue);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+}
+
+.texto-tenue {
+  margin: 0;
+  color: var(--texto-tenue);
+  font-size: 0.86rem;
 }
 
 /* ========== Insignias de estado (colores de los discos) ========== */
@@ -465,19 +513,19 @@ input[type='checkbox'] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px 3px 8px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1.3;
+  padding: 3px 9px 3px 7px;
+  border-radius: var(--radio-chico);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.35;
   white-space: nowrap;
 }
 
-/* Puntito del mismo color que el texto */
+/* Puntito del mismo color que el texto: el estado no depende solo del color */
 .insignia::before {
   content: '';
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: currentColor;
 }
@@ -498,75 +546,125 @@ input[type='checkbox'] {
 }
 
 .insignia.gris {
-  background: #eceef0;
+  background: var(--gris-fondo);
   color: var(--texto-suave);
 }
 
-/* ========== Ficha del socio (como un carnet) ========== */
+/* ========== Ficha del socio ========== */
 .panel.detalle {
   position: sticky;
   top: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 0 0 2px;
-  overflow: hidden;
+  gap: 18px;
+  max-height: calc(100vh - 64px - 68px);
+  padding: 20px;
+  overflow-y: auto;
 }
 
 .detalle-cabecera {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 18px;
-  background: var(--caucho);
-  color: #fff;
 }
 
 .detalle-cabecera h2 {
-  font-size: 1.2rem;
-  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 800;
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
-  border-radius: var(--radio);
-  background: var(--amarillo);
-  color: var(--caucho);
-  font-family: var(--fuente-titulos);
-  font-size: 1.13rem;
-  font-weight: 700;
+  border-radius: 50%;
+  background: var(--tinta);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
 }
 
 .subtitulo {
   margin: 3px 0 0;
   color: var(--texto-suave);
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-variant-numeric: tabular-nums;
 }
 
-.detalle-cabecera .subtitulo {
-  color: #b6bbc2;
+/* La fecha de vencimiento: el número protagonista de la ficha */
+.vencimiento {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--linea);
+  border-left: 4px solid var(--gris-fuerte);
+  border-radius: var(--radio);
 }
 
-.detalle > .insignia {
-  align-self: flex-start;
-  margin: 0 18px;
+.vencimiento.verde {
+  border-left-color: var(--verde-fuerte);
+}
+
+.vencimiento.amarilla {
+  border-left-color: var(--ambar-fuerte);
+  background: #fffbeb;
+}
+
+.vencimiento.roja {
+  border-left-color: var(--rojo-fuerte);
+  background: #fff6f5;
+}
+
+.vencimiento-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+}
+
+.vencimiento strong {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.vencimiento > span {
+  color: var(--texto-suave);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.vencimiento.roja > span {
+  color: var(--rojo);
+}
+
+.vencimiento.amarilla > span {
+  color: var(--ambar);
+}
+
+.aviso-baja {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.86rem;
 }
 
 .lista-datos {
   display: grid;
   grid-template-columns: 96px 1fr;
   gap: 9px 14px;
-  margin: 0 18px;
-  font-size: 0.93rem;
+  margin: 0;
+  font-size: 0.86rem;
 }
 
 .lista-datos dt {
-  color: var(--texto-suave);
+  color: var(--texto-tenue);
+  font-weight: 600;
 }
 
 .lista-datos dd {
@@ -575,35 +673,78 @@ input[type='checkbox'] {
   word-break: break-word;
 }
 
+/* Historial de pagos */
+.historial {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linea-suave);
+}
+
+.historial li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--linea-suave);
+  font-size: 0.84rem;
+}
+
+.historial .monto {
+  font-weight: 800;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.historial .detalle-pago {
+  color: var(--texto-tenue);
+  font-size: 0.76rem;
+}
+
+.historial li.anulado {
+  color: var(--texto-tenue);
+}
+
+.historial li.anulado .monto {
+  text-decoration: line-through;
+  color: var(--texto-tenue);
+}
+
 .detalle > .acciones {
   margin: 0;
-  padding: 14px 18px;
+  padding-top: 16px;
   border-top: 1px solid var(--linea-suave);
-  background: #fafbfb;
 }
 
 /* ========== Diálogos ========== */
 .dialogo {
   width: min(460px, 92vw);
-  padding: 24px 26px 22px;
+  padding: 26px 28px 24px;
   border: none;
-  border-top: 6px solid var(--amarillo);
-  border-radius: 6px;
-  color: var(--texto);
-  box-shadow: 0 24px 60px rgba(10, 12, 14, 0.35);
+  border-radius: 12px;
+  color: var(--tinta);
+  box-shadow: 0 30px 70px rgba(10, 14, 20, 0.3);
 }
 
 .dialogo-ancho {
-  width: min(620px, 92vw);
+  width: min(640px, 92vw);
 }
 
 .dialogo::backdrop {
-  background: rgba(16, 18, 21, 0.6);
+  background: rgba(12, 16, 22, 0.55);
 }
 
 .dialogo h2 {
   margin-bottom: 18px;
   font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.subtitulo-dialogo {
+  margin: -12px 0 20px;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
 }
 
 .campo {
@@ -613,9 +754,10 @@ input[type='checkbox'] {
   margin-bottom: 14px;
 }
 
-.campo label {
-  font-size: 0.86rem;
-  font-weight: 600;
+.campo label,
+.etiqueta-campo {
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 /* minmax(0, 1fr): las dos columnas siempre iguales, aunque un select tenga un texto largo */
@@ -632,14 +774,27 @@ input[type='checkbox'] {
   min-width: 0;
 }
 
+.dato-calculado {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px dashed #bfc5cd;
+  border-radius: var(--radio);
+  background: var(--superficie-suave);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
 .ayuda {
   margin: -6px 0 8px;
   color: var(--texto-suave);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
 .acciones {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 18px;
 }
@@ -648,237 +803,30 @@ input[type='checkbox'] {
   min-height: 1.3em;
   margin: 4px 0 0;
   color: var(--rojo);
-  font-size: 0.88rem;
-  font-weight: 500;
-}
-
-/* ========== Mensaje flotante ========== */
-.mensaje {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  padding: 12px 18px 12px 14px;
-  border-left: 5px solid #22c55e;
-  border-radius: var(--radio);
-  background: var(--caucho);
-  color: #fff;
-  font-weight: 500;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.2s, transform 0.2s;
-  pointer-events: none;
-}
-
-.mensaje.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.mensaje.error {
-  border-left-color: #ef4444;
-}
-
-/* ========== Pantallas más chicas ========== */
-@media (max-width: 1150px) {
-  .contenido {
-    padding: 22px 24px;
-  }
-
-  .dos-columnas {
-    grid-template-columns: minmax(0, 1fr) 300px;
-  }
-}
-
-/* ========== Menos movimiento si el usuario lo pide en Windows ========== */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition: none !important;
-    animation: none !important;
-  }
-}
-
-/* =====================================================================
-   ETAPA 2 — Pagos y vencimientos (pegar al final de index.css)
-   ===================================================================== */
-
-/* La ficha puede ser más alta que la ventana: que tenga su propio scroll */
-.panel.detalle {
-  max-height: calc(100vh - 56px);
-  overflow-y: auto;
-}
-
-h3 {
-  margin: 0 0 8px;
-  font-family: var(--fuente-titulos);
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.texto-tenue {
-  margin: 0;
-  color: var(--texto-tenue);
-  font-size: 0.9rem;
-}
-
-/* ---------- Bloque de vencimiento en la ficha ---------- */
-.vencimiento {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0 18px;
-  padding: 12px 14px;
-  border-left: 5px solid var(--linea);
-  border-radius: var(--radio);
-  background: var(--superficie-gris);
-}
-
-.vencimiento.verde {
-  border-left-color: #22a35a;
-}
-
-.vencimiento.amarilla {
-  border-left-color: #e0a100;
-}
-
-.vencimiento.roja {
-  border-left-color: #dc2626;
-  background: #fff5f5;
-}
-
-.vencimiento-titulo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.vencimiento strong {
-  font-family: var(--fuente-titulos);
-  font-size: 1.09rem;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.vencimiento > span {
-  color: var(--texto-suave);
-  font-size: 0.9rem;
-}
-
-.vencimiento.roja > span {
-  color: var(--rojo);
+  font-size: 0.84rem;
   font-weight: 600;
 }
 
-.accion-principal {
-  margin: 0 18px;
-}
-
-.boton-ancho {
-  width: 100%;
-  min-height: 44px;
-  font-size: 1rem;
-}
-
-.aviso-baja {
-  margin: 0 18px;
-  color: var(--texto-suave);
-  font-size: 0.88rem;
-}
-
-.detalle .seccion {
-  margin: 0 18px;
-}
-
-/* ---------- Historial de pagos ---------- */
-.historial {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--linea-suave);
-}
-
-.historial li {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 2px 10px;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--linea-suave);
-  font-size: 0.9rem;
-}
-
-.historial .monto {
-  font-weight: 600;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.historial .detalle-pago {
-  color: var(--texto-suave);
-  font-size: 0.8rem;
-}
-
-.historial li.anulado {
-  color: var(--texto-tenue);
-}
-
-.historial li.anulado .monto {
-  text-decoration: line-through;
-  color: var(--texto-tenue);
-}
-
-.boton-mini {
-  justify-self: end;
-  padding: 2px 6px;
-  font-size: 0.8rem;
-}
-
-/* ---------- Diálogo de pago ---------- */
-.subtitulo-dialogo {
-  margin: -10px 0 18px;
-  color: var(--texto-suave);
-}
-
-/* Etiqueta para un campo que no es un input (por ejemplo "Cubre hasta") */
-.etiqueta-campo {
-  font-size: 0.86rem;
-  font-weight: 600;
-}
-
-.dato-calculado {
-  display: flex;
-  align-items: center;
-  min-height: 40px;
-  padding: 8px 11px;
-  border: 1px dashed #b5bbc3;
-  border-radius: var(--radio);
-  background: var(--superficie-gris);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ---------- Vista de pagos ---------- */
+/* ========== Pagos ========== */
 .campo-mes {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 .tarjetas {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr 1.4fr;
-  gap: 16px;
+  grid-template-columns: 1.3fr 0.7fr 1.4fr;
+  gap: 18px;
 }
 
 .tarjeta {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px 18px;
+  gap: 10px;
+  padding: 18px 20px;
   background: var(--superficie);
   border: 1px solid var(--linea);
   border-radius: var(--radio);
@@ -886,27 +834,31 @@ h3 {
 
 .tarjeta > span {
   color: var(--texto-suave);
-  font-size: 0.88rem;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .tarjeta > strong {
-  font-family: var(--fuente-titulos);
-  font-size: 1.72rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   line-height: 1;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 
-/* La recaudación: tarjeta negra con línea amarilla abajo */
+/* La recaudación del mes: el número protagonista de Pagos */
 .tarjeta.destacada {
-  background: var(--caucho);
-  border-color: var(--caucho);
+  background: var(--tinta);
+  border-color: var(--tinta);
   color: #fff;
-  box-shadow: inset 0 -4px 0 var(--amarillo);
 }
 
 .tarjeta.destacada > span {
-  color: #b6bbc2;
+  color: #aab2bd;
+}
+
+.tarjeta.destacada > strong {
+  font-size: 2.3rem;
 }
 
 .lista-metodos {
@@ -919,52 +871,32 @@ h3 {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 0.92rem;
+  font-size: 0.86rem;
 }
 
 .fila-metodo strong {
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
-/* Pagos anulados en la tabla: grises y con el monto tachado */
-.tabla tr.anulado td {
-  color: var(--texto-tenue);
-}
-
-.tabla tr.anulado td.monto {
-  text-decoration: line-through;
-}
-
-/* Que el nombre del socio no se parta en dos líneas */
-.tabla-seleccionable td:first-child {
-  white-space: nowrap;
-}
-
-.panel-tabla {
-  overflow-x: auto;
-}
-
-/* =====================================================================
-   ETAPA 3 — Control de ingreso (pegar al final de index.css)
-   ===================================================================== */
-
+/* ========== Ingreso (recepción) ========== */
 .reloj {
   margin: 0;
   color: var(--texto-suave);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .ingreso-grilla {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr) 380px;
   gap: 18px;
   align-items: start;
 }
 
-/* ---------- Campo del DNI: grande, para usar rápido ---------- */
 .form-ingreso {
-  padding: 22px;
+  padding: 24px;
   background: var(--superficie);
   border: 1px solid var(--linea);
   border-radius: var(--radio);
@@ -972,66 +904,72 @@ h3 {
 
 .form-ingreso label {
   display: block;
-  margin-bottom: 10px;
-  font-family: var(--fuente-titulos);
-  font-size: 1.05rem;
+  margin-bottom: 12px;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
 .ingreso-fila {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
+/* El DNI: grande, para escribir rápido y leer de lejos */
 .ingreso-fila input {
   flex: 1;
   min-width: 0;
-  min-height: 68px;
-  font-family: var(--fuente-titulos);
-  font-size: 1.87rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  min-height: 76px;
+  padding: 8px 18px;
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
 }
 
+.ingreso-fila input::placeholder {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
 .ingreso-fila .boton {
-  min-height: 68px;
-  padding: 0 30px;
-  font-size: 1.15rem;
+  min-height: 76px;
+  padding: 0 32px;
+  font-size: 1.05rem;
 }
 
 .form-ingreso .ayuda {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
 }
 
-/* ---------- Tarjeta con el resultado ---------- */
+/* Tarjeta con el resultado: se tiene que entender en un segundo */
 .ingreso-resultado {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 14px 20px;
+  gap: 16px 20px;
   margin-top: 18px;
-  padding: 22px 24px;
-  background: var(--superficie);
+  padding: 24px 26px;
   border: 1px solid var(--linea);
-  border-left: 12px solid #9aa0a8;
+  border-top: 8px solid var(--gris-fuerte);
   border-radius: var(--radio);
+  background: var(--superficie);
   animation: aparecer 0.2s ease-out;
 }
 
 .ingreso-resultado.verde {
-  border-left-color: #22a35a;
-  background: #f0fbf4;
+  border-top-color: var(--verde-fuerte);
+  background: #f3fbf6;
 }
 
 .ingreso-resultado.amarilla {
-  border-left-color: #e0a100;
-  background: #fffaeb;
+  border-top-color: var(--ambar-fuerte);
+  background: #fffbeb;
 }
 
 .ingreso-resultado.roja {
-  border-left-color: #dc2626;
-  background: #fff5f5;
+  border-top-color: var(--rojo-fuerte);
+  background: #fff6f5;
 }
 
 /* Sin avatar (DNI inválido o desconocido): el texto ocupa todo el ancho */
@@ -1043,33 +981,34 @@ h3 {
 .resultado-avatar {
   display: grid;
   place-items: center;
-  width: 76px;
-  height: 76px;
-  border-radius: var(--radio);
-  background: var(--caucho);
-  color: var(--amarillo);
-  font-family: var(--fuente-titulos);
-  font-size: 1.64rem;
-  font-weight: 700;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--tinta);
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
 }
 
 .resultado-titulo {
   display: block;
-  font-family: var(--fuente-titulos);
-  font-size: 1.79rem;
-  font-weight: 700;
-  line-height: 1.05;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
 .resultado-linea {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: var(--texto-suave);
+  font-size: 0.88rem;
 }
 
 .resultado-cuota {
-  margin: 8px 0 0;
-  font-size: 1.3rem;
-  font-weight: 600;
+  margin: 10px 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .ingreso-resultado.verde .resultado-cuota {
@@ -1100,20 +1039,21 @@ h3 {
   }
 }
 
-/* ---------- Lista de ingresos de hoy ---------- */
+/* Lista de ingresos de hoy */
 .ingresos-hoy {
   position: sticky;
   top: 0;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 64px - 140px);
   overflow-y: auto;
 }
 
 .ingresos-hoy h2 {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
+  font-weight: 800;
 }
 
 .lista-ingresos {
-  margin: 12px 0 0;
+  margin: 14px 0 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--linea-suave);
@@ -1124,14 +1064,13 @@ h3 {
   grid-template-columns: 46px minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 8px;
-  padding: 8px 0;
+  padding: 9px 0;
   border-bottom: 1px solid var(--linea-suave);
-  font-size: 0.92rem;
+  font-size: 0.84rem;
 }
 
 .lista-ingresos .hora {
-  color: var(--texto-suave);
-  font-weight: 600;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1148,49 +1087,75 @@ h3 {
 }
 
 .nombre-ingreso:hover {
+  color: var(--acento);
   text-decoration: underline;
-  text-decoration-color: var(--amarillo);
-  text-decoration-thickness: 2px;
 }
 
-/* =====================================================================
-   AJUSTES PARA MONTSERRAT (más ancha que Barlow Condensed)
-   ===================================================================== */
-
-/* En las tablas, los datos cortos (fechas, DNI, montos, estados) no se parten
-   en dos líneas. Solo el nombre del plan puede usar dos renglones. */
-.tabla td {
-  padding: 10px;
-  white-space: nowrap;
-}
-
-.tabla th {
-  padding: 10px;
-}
-
-#tabla-socios td:nth-child(3),
-#tabla-pagos td:nth-child(3) {
-  min-width: 150px;
-  white-space: normal;
-}
-
-/* La ficha un poco más angosta para dejarle lugar a la tabla */
-.dos-columnas {
-  grid-template-columns: minmax(0, 1fr) 300px;
-}
-
-/* "Vence el 05/12/2026" siempre en un renglón: si no entra junto a la
-   insignia, la insignia baja al renglón de abajo */
-.vencimiento strong {
-  font-size: 1.05rem;
-  white-space: nowrap;
-}
-
-.vencimiento-titulo {
-  flex-wrap: wrap;
-  row-gap: 6px;
-}
-
-.lista-ingresos li {
+/* ========== Mensaje flotante ========== */
+.mensaje {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px 12px 14px;
+  border-radius: var(--radio);
+  background: var(--tinta);
+  color: #fff;
   font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 12px 32px rgba(10, 14, 20, 0.25);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+
+/* Puntito verde (o rojo si es un error) */
+.mensaje::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d17a;
+}
+
+.mensaje.error::before {
+  background: #ff6b5e;
+}
+
+.mensaje.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== Pantallas más chicas ========== */
+@media (max-width: 1180px) {
+  .barra {
+    gap: 24px;
+    padding: 0 20px;
+  }
+
+  .contenido {
+    padding: 22px 20px 32px;
+  }
+
+  .dos-columnas {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+
+  .ingreso-grilla {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+
+/* ========== Menos movimiento si el usuario lo pide en Windows ========== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
