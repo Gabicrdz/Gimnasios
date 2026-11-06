@@ -77,7 +77,24 @@ const MIGRACIONES = [
     `);
   },
 
-  // La etapa 3 va a agregar su migración acá abajo.
+  // ===== Versión 3 (etapa 3): asistencias (control de ingreso) =====
+  () => {
+    db.exec(`
+      CREATE TABLE asistencias (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        socio_id     INTEGER NOT NULL REFERENCES socios(id) ON DELETE RESTRICT,
+        fecha        TEXT NOT NULL,   -- "AAAA-MM-DD"
+        hora         TEXT NOT NULL,   -- "HH:MM"
+        estado_cuota TEXT NOT NULL,   -- "foto" del estado de la cuota al momento de entrar
+        creado_en    TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+      );
+
+      CREATE INDEX idx_asistencias_fecha ON asistencias(fecha);
+      CREATE INDEX idx_asistencias_socio ON asistencias(socio_id, fecha);
+    `);
+  },
+
+  // Las próximas migraciones van acá abajo.
 ];
 
 function migrar() {
@@ -140,6 +157,14 @@ function hoy() {
   return `${fecha.getFullYear()}-${mes}-${dia}`;
 }
 
+// Hora actual de la compu, como "HH:MM"
+function horaActual() {
+  const fecha = new Date();
+  const horas = String(fecha.getHours()).padStart(2, '0');
+  const minutos = String(fecha.getMinutes()).padStart(2, '0');
+  return `${horas}:${minutos}`;
+}
+
 // "2026-02-31" tiene buen formato pero no existe. SQLite no avisa:
 // lo convierte en silencio a "2026-03-03". Por eso lo verificamos acá.
 function esFechaReal(valor) {
@@ -171,6 +196,7 @@ module.exports = {
   texto,
   validarId,
   hoy,
+  horaActual,
   fechaOpcional,
   fechaObligatoria,
   FECHA_VALIDA,

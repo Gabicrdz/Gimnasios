@@ -29,12 +29,51 @@
             <small>Gestión de socios</small>
           </div>
         </div>
+        <button class="nav-boton" type="button" data-vista="ingreso">Ingreso</button>
         <button class="nav-boton" type="button" data-vista="socios">Socios</button>
         <button class="nav-boton" type="button" data-vista="pagos">Pagos</button>
         <button class="nav-boton" type="button" data-vista="planes">Planes</button>
       </nav>
 
       <main class="contenido">
+        <!-- ===== Vista: Ingreso (recepción) ===== -->
+        <section id="vista-ingreso" class="vista" hidden>
+          <header class="encabezado-vista">
+            <h1>Ingreso</h1>
+            <p id="ingreso-reloj" class="reloj"></p>
+          </header>
+
+          <div class="ingreso-grilla">
+            <div>
+              <form id="form-ingreso" class="form-ingreso" autocomplete="off">
+                <label for="ingreso-dni">DNI del socio</label>
+                <div class="ingreso-fila">
+                  <input
+                    id="ingreso-dni"
+                    type="text"
+                    inputmode="numeric"
+                    maxlength="200"
+                    placeholder="Número de DNI"
+                  />
+                  <button class="boton boton-primario" type="submit">Ingresar</button>
+                </div>
+                <p class="ayuda">
+                  Escribí el DNI y apretá Enter. También funciona con un lector de código de barras.
+                </p>
+              </form>
+
+              <div id="ingreso-resultado" class="ingreso-resultado" role="status" hidden></div>
+            </div>
+
+            <aside class="panel ingresos-hoy">
+              <h2>Hoy</h2>
+              <p id="ingresos-resumen" class="subtitulo"></p>
+              <ul id="lista-ingresos" class="lista-ingresos"></ul>
+              <p id="ingresos-vacio" class="vacio" hidden>Todavía no ingresó nadie hoy.</p>
+            </aside>
+          </div>
+        </section>
+
         <!-- ===== Vista: Socios ===== -->
         <section id="vista-socios" class="vista" hidden>
           <header class="encabezado-vista">
@@ -363,6 +402,7 @@
     <!-- Orden: utilidades → app (navegación) → vistas -->
     <script src="ui/utilidades.js"></script>
     <script src="ui/app.js"></script>
+    <script src="ui/vista-ingreso.js"></script>
     <script src="ui/vista-socios.js"></script>
     <script src="ui/vista-pagos.js"></script>
     <script src="ui/vista-planes.js"></script>

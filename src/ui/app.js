@@ -67,5 +67,19 @@ async function anularPago(pago) {
   return true;
 }
 
-// Cuando terminaron de cargar todos los scripts, arrancamos en Socios
-document.addEventListener('DOMContentLoaded', () => mostrarVista('socios'));
+// ---------- Saltar de una pantalla a otra ----------
+// Abre la ficha de un socio (por ejemplo, desde la pantalla de Ingreso)
+function irAFichaDeSocio(id) {
+  vistas.socios.seleccionar(id); // primero le decimos a la vista qué socio mostrar
+  mostrarVista('socios');        // y después la mostramos (carga la lista y la ficha)
+}
+
+// Abre el formulario de socio nuevo con el DNI ya escrito
+function irANuevoSocio(dni) {
+  mostrarVista('socios');
+  vistas.socios.nuevo(dni);
+}
+
+// Cuando terminaron de cargar todos los scripts, arrancamos en Ingreso:
+// es la pantalla que queda abierta en la recepción.
+document.addEventListener('DOMContentLoaded', () => mostrarVista('ingreso'));

@@ -6,6 +6,7 @@ const conexion = require('./db/conexion');
 const planes = require('./db/planes');
 const socios = require('./db/socios');
 const pagos = require('./db/pagos');
+const asistencias = require('./db/asistencias');
 
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -48,6 +49,12 @@ manejar('pagos:registrar', (datos) => pagos.registrarPago(datos));
 manejar('pagos:anular', (id) => pagos.anularPago(id));
 manejar('pagos:de-socio', (socioId) => pagos.listarPagosDeSocio(socioId));
 manejar('pagos:resumen-mes', (mes) => pagos.resumenDelMes(mes));
+
+// ---------- Asistencias (control de ingreso) ----------
+manejar('asistencias:registrar', (entrada) => asistencias.registrarIngreso(entrada));
+manejar('asistencias:hoy', () => asistencias.ingresosDeHoy());
+manejar('asistencias:eliminar', (id) => asistencias.eliminarIngreso(id));
+manejar('asistencias:de-socio', (socioId) => asistencias.resumenAsistenciaSocio(socioId));
 
 // ---------- Confirmación genérica ----------
 manejar('dialogo:confirmar', async (opciones) => {

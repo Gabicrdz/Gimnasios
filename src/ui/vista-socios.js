@@ -116,12 +116,13 @@
   }
 
   async function mostrarDetalle(id) {
-    // Pedimos el socio y sus pagos AL MISMO TIEMPO (no uno después del otro)
-    const [socio, pagos] = await Promise.all([
+    // Pedimos el socio, sus pagos y sus asistencias AL MISMO TIEMPO (no uno después del otro)
+    const [socio, pagos, asistencia] = await Promise.all([
       pedir(window.api.obtenerSocio(id)),
       pedir(window.api.listarPagosDeSocio(id)),
+      pedir(window.api.resumenAsistenciaSocio(id)),
     ]);
-    if (socio === null || pagos === null) {
+    if (socio === null || pagos === null || asistencia === null) {
       idSeleccionado = null;
       renderDetalleVacio();
       return;
@@ -181,6 +182,13 @@
         ...dato('Plan', socio.plan),
         ...dato('Teléfono', socio.telefono),
         ...dato('Nacimiento', socio.fecha_nacimiento ? fechaCorta(socio.fecha_nacimiento) : ''),
+        ...dato(
+          'Asistencias',
+          `${asistencia.esteMes} este mes · última: ` +
+            (asistencia.ultima
+              ? `${fechaCorta(asistencia.ultima.fecha)} ${asistencia.ultima.hora}`
+              : 'nunca')
+        ),
         ...dato('Socio desde', fechaCorta(socio.creado_en)),
         ...dato('Notas', socio.notas),
       ]),
@@ -345,7 +353,8 @@
   btnCancelarPago.addEventListener('click', () => dialogoPago.close());
 
   // ---------- Formulario de socio ----------
-  async function abrirFormularioSocio(socio) {
+  // socio = null → socio nuevo. dniInicial: para llegar desde Ingreso con el DNI ya escrito.
+  async function abrirFormularioSocio(socio, dniInicial = '') {
     idEditando = socio ? socio.id : null;
 
     const planes = await obtenerPlanesDisponibles(socio?.plan_id ?? null);
@@ -369,7 +378,7 @@
           planId: socio.plan_id,
           notas: socio.notas,
         }
-      : {};
+      : { dni: dniInicial };
 
     for (const campo of CAMPOS_SOCIO) {
       formSocio.elements[campo].value = valores[campo] ?? '';
@@ -434,5 +443,12 @@
   filtroMostrar.addEventListener('change', cargar);
   btnNuevo.addEventListener('click', () => abrirFormularioSocio(null));
 
-  vistas.socios = { alMostrar: cargar };
+  vistas.socios = {
+    alMostrar: cargar,
+    // Para que otras pantallas puedan abrir una ficha o el formulario de socio nuevo
+    seleccionar: (id) => {
+      idSeleccionado = id;
+    },
+    nuevo: (dni) => abrirFormularioSocio(null, dni),
+  };
 })();

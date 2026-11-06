@@ -22,6 +22,12 @@ contextBridge.exposeInMainWorld('api', {
   listarPagosDeSocio: (socioId) => ipcRenderer.invoke('pagos:de-socio', socioId),
   resumenPagosMes: (mes) => ipcRenderer.invoke('pagos:resumen-mes', mes),
 
+  // Asistencias (control de ingreso)
+  registrarIngreso: (entrada) => ipcRenderer.invoke('asistencias:registrar', entrada),
+  ingresosDeHoy: () => ipcRenderer.invoke('asistencias:hoy'),
+  eliminarIngreso: (id) => ipcRenderer.invoke('asistencias:eliminar', id),
+  resumenAsistenciaSocio: (socioId) => ipcRenderer.invoke('asistencias:de-socio', socioId),
+
   // Diálogos
   confirmar: (opciones) => ipcRenderer.invoke('dialogo:confirmar', opciones),
 });

@@ -943,3 +943,212 @@ h3 {
 .panel-tabla {
   overflow-x: auto;
 }
+
+/* =====================================================================
+   ETAPA 3 — Control de ingreso (pegar al final de index.css)
+   ===================================================================== */
+
+.reloj {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ingreso-grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+}
+
+/* ---------- Campo del DNI: grande, para usar rápido ---------- */
+.form-ingreso {
+  padding: 22px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.form-ingreso label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--fuente-titulos);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.ingreso-fila {
+  display: flex;
+  gap: 10px;
+}
+
+.ingreso-fila input {
+  flex: 1;
+  min-width: 0;
+  min-height: 68px;
+  font-family: var(--fuente-titulos);
+  font-size: 2.4rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ingreso-fila .boton {
+  min-height: 68px;
+  padding: 0 30px;
+  font-size: 1.15rem;
+}
+
+.form-ingreso .ayuda {
+  margin: 10px 0 0;
+}
+
+/* ---------- Tarjeta con el resultado ---------- */
+.ingreso-resultado {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px 20px;
+  margin-top: 18px;
+  padding: 22px 24px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-left: 12px solid #9aa0a8;
+  border-radius: var(--radio);
+  animation: aparecer 0.2s ease-out;
+}
+
+.ingreso-resultado.verde {
+  border-left-color: #22a35a;
+  background: #f0fbf4;
+}
+
+.ingreso-resultado.amarilla {
+  border-left-color: #e0a100;
+  background: #fffaeb;
+}
+
+.ingreso-resultado.roja {
+  border-left-color: #dc2626;
+  background: #fff5f5;
+}
+
+/* Sin avatar (DNI inválido o desconocido): el texto ocupa todo el ancho */
+.resultado-texto:first-child,
+.resultado-acciones {
+  grid-column: 1 / -1;
+}
+
+.resultado-avatar {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: var(--radio);
+  background: var(--caucho);
+  color: var(--amarillo);
+  font-family: var(--fuente-titulos);
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.resultado-titulo {
+  display: block;
+  font-family: var(--fuente-titulos);
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.resultado-linea {
+  margin: 4px 0 0;
+  color: var(--texto-suave);
+}
+
+.resultado-cuota {
+  margin: 8px 0 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.ingreso-resultado.verde .resultado-cuota {
+  color: var(--verde);
+}
+
+.ingreso-resultado.amarilla .resultado-cuota {
+  color: var(--ambar);
+}
+
+.ingreso-resultado.roja .resultado-cuota {
+  color: var(--rojo);
+}
+
+.resultado-acciones {
+  display: flex;
+  gap: 10px;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Lista de ingresos de hoy ---------- */
+.ingresos-hoy {
+  position: sticky;
+  top: 0;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+.ingresos-hoy h2 {
+  font-size: 1.6rem;
+}
+
+.lista-ingresos {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linea-suave);
+}
+
+.lista-ingresos li {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--linea-suave);
+  font-size: 0.92rem;
+}
+
+.lista-ingresos .hora {
+  color: var(--texto-suave);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.nombre-ingreso {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nombre-ingreso:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--amarillo);
+  text-decoration-thickness: 2px;
+}
