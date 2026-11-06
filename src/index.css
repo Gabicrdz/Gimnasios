@@ -2,7 +2,7 @@
    Mi Gimnasio — estilos
    Dirección: cartelería de sala de pesas. Menú negro como el piso de
    caucho, amarillo de seguridad solo para lo importante, títulos
-   condensados como los carteles del gimnasio, y los estados con los
+   en Montserrat bien negrita, y los estados con los
    colores de los discos olímpicos (verde, amarillo, rojo).
    ===================================================================== */
 
@@ -36,8 +36,8 @@
   --rojo-fondo: #fde3e3;
 
   /* Tipografía */
-  --fuente-texto: 'Barlow', 'Segoe UI', system-ui, sans-serif;
-  --fuente-titulos: 'Barlow Condensed', 'Arial Narrow', 'Segoe UI', sans-serif;
+  --fuente-texto: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+  --fuente-titulos: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
 
   /* Formas */
   --radio: 4px;
@@ -60,8 +60,8 @@ body {
 
 body {
   font-family: var(--fuente-texto);
-  font-size: 15px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--texto);
   background: var(--cemento);
   -webkit-font-smoothing: antialiased;
@@ -84,16 +84,16 @@ h2 {
   margin: 0;
   font-family: var(--fuente-titulos);
   font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: 0.01em;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 h1 {
-  font-size: 2.2rem;
+  font-size: 1.75rem;
 }
 
 h2 {
-  font-size: 1.4rem;
+  font-size: 1.15rem;
 }
 
 /* Foco visible para quien usa el teclado */
@@ -136,14 +136,14 @@ h2 {
   background: var(--amarillo);
   color: var(--caucho);
   font-family: var(--fuente-titulos);
-  font-size: 1.3rem;
+  font-size: 1.01rem;
   font-weight: 700;
 }
 
 .marca strong {
   display: block;
   font-family: var(--fuente-titulos);
-  font-size: 1.35rem;
+  font-size: 1.05rem;
   font-weight: 700;
   line-height: 1;
   color: #fff;
@@ -165,7 +165,7 @@ h2 {
   color: #c9cdd2;
   text-align: left;
   font-family: var(--fuente-titulos);
-  font-size: 1.2rem;
+  font-size: 0.94rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   transition: background-color 0.15s, color 0.15s;
@@ -401,7 +401,7 @@ input[type='checkbox'] {
   text-align: left;
   color: var(--texto-suave);
   font-family: var(--fuente-titulos);
-  font-size: 1rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -523,7 +523,7 @@ input[type='checkbox'] {
 }
 
 .detalle-cabecera h2 {
-  font-size: 1.55rem;
+  font-size: 1.2rem;
   color: #fff;
 }
 
@@ -537,7 +537,7 @@ input[type='checkbox'] {
   background: var(--amarillo);
   color: var(--caucho);
   font-family: var(--fuente-titulos);
-  font-size: 1.45rem;
+  font-size: 1.13rem;
   font-weight: 700;
 }
 
@@ -603,7 +603,7 @@ input[type='checkbox'] {
 
 .dialogo h2 {
   margin-bottom: 18px;
-  font-size: 1.7rem;
+  font-size: 1.35rem;
 }
 
 .campo {
@@ -713,7 +713,7 @@ input[type='checkbox'] {
 h3 {
   margin: 0 0 8px;
   font-family: var(--fuente-titulos);
-  font-size: 1.15rem;
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
@@ -757,7 +757,7 @@ h3 {
 
 .vencimiento strong {
   font-family: var(--fuente-titulos);
-  font-size: 1.4rem;
+  font-size: 1.09rem;
   font-weight: 700;
   line-height: 1.1;
 }
@@ -891,7 +891,7 @@ h3 {
 
 .tarjeta > strong {
   font-family: var(--fuente-titulos);
-  font-size: 2.2rem;
+  font-size: 1.72rem;
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -974,7 +974,7 @@ h3 {
   display: block;
   margin-bottom: 10px;
   font-family: var(--fuente-titulos);
-  font-size: 1.35rem;
+  font-size: 1.05rem;
   font-weight: 700;
 }
 
@@ -988,9 +988,9 @@ h3 {
   min-width: 0;
   min-height: 68px;
   font-family: var(--fuente-titulos);
-  font-size: 2.4rem;
+  font-size: 1.87rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.03em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1049,14 +1049,14 @@ h3 {
   background: var(--caucho);
   color: var(--amarillo);
   font-family: var(--fuente-titulos);
-  font-size: 2.1rem;
+  font-size: 1.64rem;
   font-weight: 700;
 }
 
 .resultado-titulo {
   display: block;
   font-family: var(--fuente-titulos);
-  font-size: 2.3rem;
+  font-size: 1.79rem;
   font-weight: 700;
   line-height: 1.05;
 }
@@ -1109,7 +1109,7 @@ h3 {
 }
 
 .ingresos-hoy h2 {
-  font-size: 1.6rem;
+  font-size: 1.25rem;
 }
 
 .lista-ingresos {
@@ -1151,4 +1151,46 @@ h3 {
   text-decoration: underline;
   text-decoration-color: var(--amarillo);
   text-decoration-thickness: 2px;
+}
+
+/* =====================================================================
+   AJUSTES PARA MONTSERRAT (más ancha que Barlow Condensed)
+   ===================================================================== */
+
+/* En las tablas, los datos cortos (fechas, DNI, montos, estados) no se parten
+   en dos líneas. Solo el nombre del plan puede usar dos renglones. */
+.tabla td {
+  padding: 10px;
+  white-space: nowrap;
+}
+
+.tabla th {
+  padding: 10px;
+}
+
+#tabla-socios td:nth-child(3),
+#tabla-pagos td:nth-child(3) {
+  min-width: 150px;
+  white-space: normal;
+}
+
+/* La ficha un poco más angosta para dejarle lugar a la tabla */
+.dos-columnas {
+  grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+/* "Vence el 05/12/2026" siempre en un renglón: si no entra junto a la
+   insignia, la insignia baja al renglón de abajo */
+.vencimiento strong {
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.vencimiento-titulo {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.lista-ingresos li {
+  font-size: 0.88rem;
 }
