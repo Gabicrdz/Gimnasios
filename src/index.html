@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'"
+    />
+    <title>Mi Gimnasio</title>
+
+    <!-- Fuentes locales (funcionan sin internet) -->
+    <link rel="stylesheet" href="../node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="../node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="../node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="../node_modules/@fontsource/barlow-condensed/600.css" />
+    <link rel="stylesheet" href="../node_modules/@fontsource/barlow-condensed/700.css" />
+
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- ===== Menú lateral ===== -->
+      <nav class="menu-lateral">
+        <div class="marca">
+          <span class="logo">MG</span>
+          <div>
+            <!-- Acá va el nombre del gimnasio del cliente -->
+            <strong>Mi Gimnasio</strong>
+            <small>Gestión de socios</small>
+          </div>
+        </div>
+        <button class="nav-boton" type="button" data-vista="socios">Socios</button>
+        <button class="nav-boton" type="button" data-vista="pagos">Pagos</button>
+        <button class="nav-boton" type="button" data-vista="planes">Planes</button>
+      </nav>
+
+      <main class="contenido">
+        <!-- ===== Vista: Socios ===== -->
+        <section id="vista-socios" class="vista" hidden>
+          <header class="encabezado-vista">
+            <h1>Socios</h1>
+            <button id="btn-nuevo-socio" class="boton boton-primario" type="button">
+              + Nuevo socio
+            </button>
+          </header>
+
+          <div class="barra-herramientas">
+            <input
+              id="buscador-socios"
+              class="buscador"
+              type="search"
+              placeholder="Buscar por nombre, apellido o DNI…"
+              autocomplete="off"
+            />
+            <select id="filtro-estado" title="Estado de la cuota">
+              <option value="todos">Todas las cuotas</option>
+              <option value="al_dia">Al día</option>
+              <option value="por_vencer">Por vencer</option>
+              <option value="vencido">Vencidas</option>
+              <option value="sin_pagos">Sin pagos</option>
+            </select>
+            <select id="filtro-mostrar" title="Socios activos o dados de baja">
+              <option value="activos">Activos</option>
+              <option value="bajas">Dados de baja</option>
+              <option value="todos">Todos</option>
+            </select>
+            <span id="contador-socios" class="contador"></span>
+          </div>
+
+          <div class="dos-columnas">
+            <div class="panel panel-tabla">
+              <table class="tabla tabla-seleccionable">
+                <thead>
+                  <tr>
+                    <th>Socio</th>
+                    <th>DNI</th>
+                    <th>Plan</th>
+                    <th>Vence</th>
+                    <th>Cuota</th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-socios"></tbody>
+              </table>
+              <p id="socios-vacio" class="vacio" hidden></p>
+            </div>
+
+            <aside id="detalle-socio" class="panel detalle"></aside>
+          </div>
+        </section>
+
+        <!-- ===== Vista: Pagos ===== -->
+        <section id="vista-pagos" class="vista" hidden>
+          <header class="encabezado-vista">
+            <h1>Pagos</h1>
+            <label class="campo-mes">
+              Mes
+              <input id="pagos-mes" type="month" />
+            </label>
+          </header>
+
+          <div class="tarjetas">
+            <article class="tarjeta destacada">
+              <span>Recaudado en el mes</span>
+              <strong id="pagos-total">$ 0,00</strong>
+            </article>
+            <article class="tarjeta">
+              <span>Pagos cobrados</span>
+              <strong id="pagos-cantidad">0</strong>
+            </article>
+            <article class="tarjeta">
+              <span>Por medio de pago</span>
+              <div id="pagos-metodos" class="lista-metodos"></div>
+            </article>
+          </div>
+
+          <div class="panel panel-tabla">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Socio</th>
+                  <th>Plan</th>
+                  <th>Período</th>
+                  <th>Medio</th>
+                  <th class="derecha">Monto</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tabla-pagos"></tbody>
+            </table>
+            <p id="pagos-vacio" class="vacio" hidden>No hay pagos registrados en este mes.</p>
+          </div>
+        </section>
+
+        <!-- ===== Vista: Planes ===== -->
+        <section id="vista-planes" class="vista" hidden>
+          <header class="encabezado-vista">
+            <h1>Planes</h1>
+            <button id="btn-nuevo-plan" class="boton boton-primario" type="button">
+              + Nuevo plan
+            </button>
+          </header>
+
+          <label class="casilla">
+            <input id="planes-inactivos" type="checkbox" />
+            Mostrar planes inactivos
+          </label>
+
+          <div class="panel panel-tabla">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th>Plan</th>
+                  <th class="derecha">Precio</th>
+                  <th>Duración</th>
+                  <th class="derecha">Socios activos</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tabla-planes"></tbody>
+            </table>
+            <p id="planes-vacio" class="vacio" hidden>No hay planes cargados.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ===== Diálogo: socio ===== -->
+    <dialog id="dialogo-socio" class="dialogo dialogo-ancho">
+      <form id="form-socio">
+        <h2 id="titulo-socio">Nuevo socio</h2>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="socio-nombre">Nombre *</label>
+            <input id="socio-nombre" name="nombre" type="text" maxlength="60" required />
+          </div>
+          <div class="campo">
+            <label for="socio-apellido">Apellido *</label>
+            <input id="socio-apellido" name="apellido" type="text" maxlength="60" required />
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="socio-dni">DNI *</label>
+            <input
+              id="socio-dni"
+              name="dni"
+              type="text"
+              inputmode="numeric"
+              maxlength="11"
+              placeholder="30123456"
+              autocomplete="off"
+              required
+            />
+          </div>
+          <div class="campo">
+            <label for="socio-telefono">Teléfono</label>
+            <input id="socio-telefono" name="telefono" type="tel" maxlength="30" />
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="socio-nacimiento">Fecha de nacimiento</label>
+            <input id="socio-nacimiento" name="fechaNacimiento" type="date" />
+          </div>
+          <div class="campo">
+            <label for="socio-plan">Plan</label>
+            <select id="socio-plan" name="planId"></select>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="socio-notas">Notas</label>
+          <textarea
+            id="socio-notas"
+            name="notas"
+            maxlength="500"
+            rows="3"
+            placeholder="Lesiones, objetivos, observaciones…"
+          ></textarea>
+        </div>
+
+        <p id="error-socio" class="error-form"></p>
+
+        <div class="acciones">
+          <button class="boton boton-primario" type="submit">Guardar</button>
+          <button id="btn-cancelar-socio" class="boton boton-secundario" type="button">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===== Diálogo: registrar pago ===== -->
+    <dialog id="dialogo-pago" class="dialogo dialogo-ancho">
+      <form id="form-pago">
+        <h2>Registrar pago</h2>
+        <p id="pago-socio" class="subtitulo-dialogo"></p>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="pago-plan">Plan</label>
+            <select id="pago-plan" name="planId" required></select>
+          </div>
+          <div class="campo">
+            <label for="pago-monto">Monto ($)</label>
+            <input
+              id="pago-monto"
+              name="monto"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="pago-metodo">Medio de pago</label>
+            <select id="pago-metodo" name="metodo">
+              <option value="efectivo">Efectivo</option>
+              <option value="transferencia">Transferencia</option>
+              <option value="debito">Débito</option>
+              <option value="credito">Crédito</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="pago-fecha">Fecha de pago</label>
+            <input id="pago-fecha" name="fechaPago" type="date" required />
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="pago-desde">Cubre desde</label>
+            <input id="pago-desde" name="cubreDesde" type="date" required />
+          </div>
+          <div class="campo">
+            <span class="etiqueta-campo">Cubre hasta</span>
+            <output id="pago-hasta" class="dato-calculado">—</output>
+          </div>
+        </div>
+
+        <p id="pago-ayuda" class="ayuda"></p>
+
+        <div class="campo">
+          <label for="pago-notas">Notas</label>
+          <input
+            id="pago-notas"
+            name="notas"
+            type="text"
+            maxlength="200"
+            placeholder="Opcional: descuento, promoción…"
+          />
+        </div>
+
+        <p id="error-pago" class="error-form"></p>
+
+        <div class="acciones">
+          <button class="boton boton-primario" type="submit">Registrar pago</button>
+          <button id="btn-cancelar-pago" class="boton boton-secundario" type="button">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===== Diálogo: plan ===== -->
+    <dialog id="dialogo-plan" class="dialogo">
+      <form id="form-plan">
+        <h2 id="titulo-plan">Nuevo plan</h2>
+
+        <div class="campo">
+          <label for="plan-nombre">Nombre</label>
+          <input
+            id="plan-nombre"
+            name="nombre"
+            type="text"
+            maxlength="60"
+            placeholder="Mensual libre"
+            required
+          />
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="plan-precio">Precio ($)</label>
+            <input
+              id="plan-precio"
+              name="precio"
+              type="text"
+              inputmode="decimal"
+              placeholder="25.000"
+              autocomplete="off"
+              required
+            />
+          </div>
+          <div class="campo">
+            <label for="plan-duracion">Duración (días)</label>
+            <input id="plan-duracion" name="duracion" type="number" min="1" max="366" required />
+          </div>
+        </div>
+
+        <p class="ayuda">La duración define hasta cuándo cubre cada pago: 30 = mensual, 90 = trimestral.</p>
+        <p id="error-plan" class="error-form"></p>
+
+        <div class="acciones">
+          <button class="boton boton-primario" type="submit">Guardar</button>
+          <button id="btn-cancelar-plan" class="boton boton-secundario" type="button">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="mensaje" class="mensaje" role="status"></div>
+
+    <!-- Orden: utilidades → app (navegación) → vistas -->
+    <script src="ui/utilidades.js"></script>
+    <script src="ui/app.js"></script>
+    <script src="ui/vista-socios.js"></script>
+    <script src="ui/vista-pagos.js"></script>
+    <script src="ui/vista-planes.js"></script>
+  </body>
+</html>

@@ -1,0 +1,945 @@
+/* =====================================================================
+   Mi Gimnasio — estilos
+   Dirección: cartelería de sala de pesas. Menú negro como el piso de
+   caucho, amarillo de seguridad solo para lo importante, títulos
+   condensados como los carteles del gimnasio, y los estados con los
+   colores de los discos olímpicos (verde, amarillo, rojo).
+   ===================================================================== */
+
+/* ---------- Variables (cambiando estas cambia todo el sistema) ---------- */
+:root {
+  /* Superficies */
+  --caucho: #16181b;          /* menú lateral y cabecera de la ficha */
+  --caucho-claro: #24272c;    /* hover en el menú */
+  --cemento: #eceeef;         /* fondo general */
+  --superficie: #ffffff;      /* paneles y tablas */
+  --superficie-gris: #f6f7f8; /* encabezado de tablas */
+  --linea: #d6dadf;
+  --linea-suave: #e9ebee;
+
+  /* Texto */
+  --texto: #15171a;
+  --texto-suave: #545b64;
+  --texto-tenue: #6b7280;
+
+  /* Acento: amarillo de seguridad */
+  --amarillo: #ffcc00;
+  --amarillo-hover: #f2c100;
+  --amarillo-fondo: #fff6cc;
+
+  /* Estados (colores de los discos) */
+  --verde: #166534;
+  --verde-fondo: #dcf3e4;
+  --ambar: #854d0e;
+  --ambar-fondo: #fff0bf;
+  --rojo: #b91c1c;
+  --rojo-fondo: #fde3e3;
+
+  /* Tipografía */
+  --fuente-texto: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+  --fuente-titulos: 'Barlow Condensed', 'Arial Narrow', 'Segoe UI', sans-serif;
+
+  /* Formas */
+  --radio: 4px;
+}
+
+/* ---------- Base ---------- */
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--fuente-texto);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--texto);
+  background: var(--cemento);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2 {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+h1 {
+  font-size: 2.2rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+}
+
+/* Foco visible para quien usa el teclado */
+:focus-visible {
+  outline: 2px solid var(--texto);
+  outline-offset: 2px;
+}
+
+/* ========== Estructura general ========== */
+.app {
+  display: grid;
+  grid-template-columns: 232px 1fr;
+  height: 100%;
+}
+
+/* ---------- Menú lateral ---------- */
+.menu-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 22px 0;
+  background: var(--caucho);
+  color: #c9cdd2;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px 28px;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: var(--radio);
+  background: var(--amarillo);
+  color: var(--caucho);
+  font-family: var(--fuente-titulos);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.marca strong {
+  display: block;
+  font-family: var(--fuente-titulos);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+}
+
+.marca small {
+  display: block;
+  margin-top: 4px;
+  color: #8b9199;
+  font-size: 0.8rem;
+}
+
+.nav-boton {
+  position: relative;
+  width: 100%;
+  padding: 11px 20px;
+  border: none;
+  background: transparent;
+  color: #c9cdd2;
+  text-align: left;
+  font-family: var(--fuente-titulos);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.nav-boton:hover {
+  background: var(--caucho-claro);
+  color: #fff;
+}
+
+.nav-boton.activo {
+  background: var(--caucho-claro);
+  color: #fff;
+}
+
+/* Barra amarilla a la izquierda de la sección actual */
+.nav-boton.activo::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  width: 4px;
+  background: var(--amarillo);
+}
+
+.nav-boton:focus-visible {
+  outline: 2px solid var(--amarillo);
+  outline-offset: -2px;
+}
+
+/* ---------- Contenido ---------- */
+.contenido {
+  min-width: 0;
+  padding: 28px 32px;
+  overflow-y: auto;
+}
+
+.vista {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1280px;
+}
+
+/* Título con raya gruesa abajo, como un cartel */
+.encabezado-vista {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 3px solid var(--texto);
+}
+
+.barra-herramientas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.buscador {
+  flex: 1;
+  max-width: 400px;
+}
+
+.contador {
+  margin-left: auto;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.casilla {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.dos-columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 18px;
+  align-items: start;
+}
+
+/* ========== Botones ========== */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radio);
+  font-weight: 600;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.boton:active {
+  transform: translateY(1px);
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Amarillo: la acción principal de cada pantalla */
+.boton-primario {
+  background: var(--amarillo);
+  border-color: var(--amarillo);
+  color: var(--texto);
+}
+
+.boton-primario:hover {
+  background: var(--amarillo-hover);
+  border-color: var(--amarillo-hover);
+}
+
+.boton-secundario {
+  background: var(--superficie);
+  border-color: var(--linea);
+}
+
+.boton-secundario:hover {
+  border-color: var(--texto);
+}
+
+.boton-peligro {
+  background: var(--superficie);
+  border-color: #f0b8b8;
+  color: var(--rojo);
+}
+
+.boton-peligro:hover {
+  background: var(--rojo-fondo);
+  border-color: var(--rojo);
+}
+
+/* Acciones dentro de las tablas */
+.boton-texto {
+  padding: 4px 8px;
+  border: none;
+  border-radius: var(--radio);
+  background: transparent;
+  color: var(--texto);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--linea);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.boton-texto:hover {
+  background: var(--amarillo-fondo);
+  text-decoration-color: var(--amarillo);
+}
+
+/* ========== Campos ========== */
+input,
+select,
+textarea {
+  min-height: 40px;
+  padding: 8px 11px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+textarea {
+  min-height: 0;
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9aa0a8;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #b5bbc3;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--texto);
+  box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.6);
+}
+
+input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--texto);
+}
+
+/* ========== Paneles y tablas ========== */
+.panel {
+  padding: 18px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.panel-tabla {
+  padding: 0;
+  overflow: hidden;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+}
+
+.tabla th {
+  padding: 10px 14px;
+  background: var(--superficie-gris);
+  border-bottom: 1px solid var(--linea);
+  text-align: left;
+  color: var(--texto-suave);
+  font-family: var(--fuente-titulos);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.tabla td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--linea-suave);
+}
+
+.tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla td strong {
+  font-weight: 600;
+}
+
+.tabla .derecha {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla-seleccionable tbody tr {
+  cursor: pointer;
+}
+
+.tabla-seleccionable tbody tr:hover {
+  background: #f7f8f9;
+}
+
+.tabla tr.seleccionada,
+.tabla tr.seleccionada:hover {
+  background: var(--amarillo-fondo);
+}
+
+/* Marca amarilla en la fila elegida */
+.tabla tr.seleccionada td:first-child {
+  box-shadow: inset 4px 0 0 var(--amarillo);
+}
+
+.tabla tr.inactivo td {
+  color: var(--texto-tenue);
+}
+
+.acciones-fila {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.vacio {
+  width: 100%;
+  margin: 0;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--texto-tenue);
+  font-size: 0.95rem;
+}
+
+/* ========== Insignias de estado (colores de los discos) ========== */
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* Puntito del mismo color que el texto */
+.insignia::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.insignia.verde {
+  background: var(--verde-fondo);
+  color: var(--verde);
+}
+
+.insignia.amarilla {
+  background: var(--ambar-fondo);
+  color: var(--ambar);
+}
+
+.insignia.roja {
+  background: var(--rojo-fondo);
+  color: var(--rojo);
+}
+
+.insignia.gris {
+  background: #eceef0;
+  color: var(--texto-suave);
+}
+
+/* ========== Ficha del socio (como un carnet) ========== */
+.panel.detalle {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 0 2px;
+  overflow: hidden;
+}
+
+.detalle-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  background: var(--caucho);
+  color: #fff;
+}
+
+.detalle-cabecera h2 {
+  font-size: 1.55rem;
+  color: #fff;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: var(--radio);
+  background: var(--amarillo);
+  color: var(--caucho);
+  font-family: var(--fuente-titulos);
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.subtitulo {
+  margin: 3px 0 0;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.detalle-cabecera .subtitulo {
+  color: #b6bbc2;
+}
+
+.detalle > .insignia {
+  align-self: flex-start;
+  margin: 0 18px;
+}
+
+.lista-datos {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 9px 14px;
+  margin: 0 18px;
+  font-size: 0.93rem;
+}
+
+.lista-datos dt {
+  color: var(--texto-suave);
+}
+
+.lista-datos dd {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detalle > .acciones {
+  margin: 0;
+  padding: 14px 18px;
+  border-top: 1px solid var(--linea-suave);
+  background: #fafbfb;
+}
+
+/* ========== Diálogos ========== */
+.dialogo {
+  width: min(460px, 92vw);
+  padding: 24px 26px 22px;
+  border: none;
+  border-top: 6px solid var(--amarillo);
+  border-radius: 6px;
+  color: var(--texto);
+  box-shadow: 0 24px 60px rgba(10, 12, 14, 0.35);
+}
+
+.dialogo-ancho {
+  width: min(620px, 92vw);
+}
+
+.dialogo::backdrop {
+  background: rgba(16, 18, 21, 0.6);
+}
+
+.dialogo h2 {
+  margin-bottom: 18px;
+  font-size: 1.7rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.campo label {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+/* minmax(0, 1fr): las dos columnas siempre iguales, aunque un select tenga un texto largo */
+.fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  min-width: 0;
+}
+
+.ayuda {
+  margin: -6px 0 8px;
+  color: var(--texto-suave);
+  font-size: 0.82rem;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.error-form {
+  min-height: 1.3em;
+  margin: 4px 0 0;
+  color: var(--rojo);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* ========== Mensaje flotante ========== */
+.mensaje {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  padding: 12px 18px 12px 14px;
+  border-left: 5px solid #22c55e;
+  border-radius: var(--radio);
+  background: var(--caucho);
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+
+.mensaje.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mensaje.error {
+  border-left-color: #ef4444;
+}
+
+/* ========== Pantallas más chicas ========== */
+@media (max-width: 1150px) {
+  .contenido {
+    padding: 22px 24px;
+  }
+
+  .dos-columnas {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+
+/* ========== Menos movimiento si el usuario lo pide en Windows ========== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* =====================================================================
+   ETAPA 2 — Pagos y vencimientos (pegar al final de index.css)
+   ===================================================================== */
+
+/* La ficha puede ser más alta que la ventana: que tenga su propio scroll */
+.panel.detalle {
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.texto-tenue {
+  margin: 0;
+  color: var(--texto-tenue);
+  font-size: 0.9rem;
+}
+
+/* ---------- Bloque de vencimiento en la ficha ---------- */
+.vencimiento {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 18px;
+  padding: 12px 14px;
+  border-left: 5px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--superficie-gris);
+}
+
+.vencimiento.verde {
+  border-left-color: #22a35a;
+}
+
+.vencimiento.amarilla {
+  border-left-color: #e0a100;
+}
+
+.vencimiento.roja {
+  border-left-color: #dc2626;
+  background: #fff5f5;
+}
+
+.vencimiento-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vencimiento strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.vencimiento > span {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
+.vencimiento.roja > span {
+  color: var(--rojo);
+  font-weight: 600;
+}
+
+.accion-principal {
+  margin: 0 18px;
+}
+
+.boton-ancho {
+  width: 100%;
+  min-height: 44px;
+  font-size: 1rem;
+}
+
+.aviso-baja {
+  margin: 0 18px;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+}
+
+.detalle .seccion {
+  margin: 0 18px;
+}
+
+/* ---------- Historial de pagos ---------- */
+.historial {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linea-suave);
+}
+
+.historial li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--linea-suave);
+  font-size: 0.9rem;
+}
+
+.historial .monto {
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.historial .detalle-pago {
+  color: var(--texto-suave);
+  font-size: 0.8rem;
+}
+
+.historial li.anulado {
+  color: var(--texto-tenue);
+}
+
+.historial li.anulado .monto {
+  text-decoration: line-through;
+  color: var(--texto-tenue);
+}
+
+.boton-mini {
+  justify-self: end;
+  padding: 2px 6px;
+  font-size: 0.8rem;
+}
+
+/* ---------- Diálogo de pago ---------- */
+.subtitulo-dialogo {
+  margin: -10px 0 18px;
+  color: var(--texto-suave);
+}
+
+/* Etiqueta para un campo que no es un input (por ejemplo "Cubre hasta") */
+.etiqueta-campo {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.dato-calculado {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 11px;
+  border: 1px dashed #b5bbc3;
+  border-radius: var(--radio);
+  background: var(--superficie-gris);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Vista de pagos ---------- */
+.campo-mes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1.4fr;
+  gap: 16px;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}
+
+.tarjeta > span {
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+}
+
+.tarjeta > strong {
+  font-family: var(--fuente-titulos);
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* La recaudación: tarjeta negra con línea amarilla abajo */
+.tarjeta.destacada {
+  background: var(--caucho);
+  border-color: var(--caucho);
+  color: #fff;
+  box-shadow: inset 0 -4px 0 var(--amarillo);
+}
+
+.tarjeta.destacada > span {
+  color: #b6bbc2;
+}
+
+.lista-metodos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fila-metodo {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.92rem;
+}
+
+.fila-metodo strong {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pagos anulados en la tabla: grises y con el monto tachado */
+.tabla tr.anulado td {
+  color: var(--texto-tenue);
+}
+
+.tabla tr.anulado td.monto {
+  text-decoration: line-through;
+}
+
+/* Que el nombre del socio no se parta en dos líneas */
+.tabla-seleccionable td:first-child {
+  white-space: nowrap;
+}
+
+.panel-tabla {
+  overflow-x: auto;
+}

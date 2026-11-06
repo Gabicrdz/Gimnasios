@@ -1,0 +1,177 @@
+// db/conexion.js — Abre la base de datos, aplica las migraciones
+// y tiene ayudantes que usan los demás archivos de /db.
+
+const Database = require('better-sqlite3');
+const path = require('node:path');
+const { app } = require('electron');
+
+let db = null;
+
+// ---------- Migraciones ----------
+// Cada función de la lista es una versión de la base (posición 0 = versión 1).
+// REGLA DE ORO: nunca modificar una migración que ya se ejecutó en la compu
+// de un cliente. Para cambiar algo, se agrega una función NUEVA al final.
+const MIGRACIONES = [
+  // ===== Versión 1 (etapa 1): planes y socios =====
+  () => {
+    db.exec(`
+      CREATE TABLE planes (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre          TEXT NOT NULL COLLATE NOCASE UNIQUE,
+        precio_centavos INTEGER NOT NULL CHECK (precio_centavos > 0),
+        duracion_dias   INTEGER NOT NULL CHECK (duracion_dias > 0),
+        activo          INTEGER NOT NULL DEFAULT 1
+      );
+
+      CREATE TABLE socios (
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre           TEXT NOT NULL,
+        apellido         TEXT NOT NULL,
+        dni              TEXT NOT NULL UNIQUE,
+        telefono         TEXT,
+        fecha_nacimiento TEXT,
+        plan_id          INTEGER REFERENCES planes(id) ON DELETE RESTRICT,
+        notas            TEXT,
+        activo           INTEGER NOT NULL DEFAULT 1,
+        creado_en        TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+      );
+
+      CREATE INDEX idx_socios_apellido ON socios(apellido);
+    `);
+
+    // Planes de ejemplo (el cliente los edita con sus precios reales)
+    const insertar = db.prepare(
+      'INSERT INTO planes (nombre, precio_centavos, duracion_dias) VALUES (?, ?, ?)'
+    );
+    insertar.run('Mensual libre', 2500000, 30);
+    insertar.run('Mensual 3 veces por semana', 1800000, 30);
+    insertar.run('Trimestral libre', 6500000, 90);
+  },
+
+  // ===== Versión 2 (etapa 2): pagos y vencimientos =====
+  () => {
+    db.exec(`
+      -- Último día que el socio tiene pagado (inclusive). NULL = nunca pagó.
+      ALTER TABLE socios ADD COLUMN vence_el TEXT;
+      CREATE INDEX idx_socios_vence ON socios(vence_el);
+
+      CREATE TABLE pagos (
+        id             INTEGER PRIMARY KEY AUTOINCREMENT,
+        socio_id       INTEGER NOT NULL REFERENCES socios(id) ON DELETE RESTRICT,
+        plan_id        INTEGER NOT NULL REFERENCES planes(id) ON DELETE RESTRICT,
+        plan_nombre    TEXT NOT NULL,
+        monto_centavos INTEGER NOT NULL CHECK (monto_centavos > 0),
+        metodo         TEXT NOT NULL
+                       CHECK (metodo IN ('efectivo', 'transferencia', 'debito', 'credito')),
+        fecha_pago     TEXT NOT NULL,
+        cubre_desde    TEXT NOT NULL,
+        cubre_hasta    TEXT NOT NULL,
+        notas          TEXT,
+        anulado        INTEGER NOT NULL DEFAULT 0,
+        anulado_en     TEXT,
+        creado_en      TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+      );
+
+      CREATE INDEX idx_pagos_socio ON pagos(socio_id);
+      CREATE INDEX idx_pagos_fecha ON pagos(fecha_pago);
+    `);
+  },
+
+  // La etapa 3 va a agregar su migración acá abajo.
+];
+
+function migrar() {
+  const versionActual = db.pragma('user_version', { simple: true });
+
+  MIGRACIONES.forEach((migracion, indice) => {
+    const version = indice + 1;
+    if (version <= versionActual) return; // ya estaba aplicada
+
+    // Cada migración en su transacción: o se aplica completa o no se aplica
+    const aplicar = db.transaction(() => {
+      migracion();
+      db.pragma(`user_version = ${version}`);
+    });
+    aplicar();
+    console.log(`Migración ${version} aplicada`);
+  });
+}
+
+// ---------- Abrir y cerrar ----------
+function iniciarBaseDeDatos() {
+  const ruta = path.join(app.getPath('userData'), 'gimnasio.db');
+  db = new Database(ruta);
+  db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
+  migrar();
+  console.log('Base de datos lista en:', ruta);
+}
+
+// Los demás módulos piden la base con esta función (y no con una variable)
+// porque cuando hacen el require, la base todavía no está abierta.
+function obtenerDb() {
+  if (!db) throw new Error('La base de datos no está iniciada');
+  return db;
+}
+
+function cerrarBaseDeDatos() {
+  if (db) db.close();
+}
+
+// ---------- Ayudantes para validar ----------
+const FECHA_VALIDA = /^\d{4}-\d{2}-\d{2}$/;
+
+// Convierte a texto, saca espacios de los bordes y recorta al máximo permitido
+function texto(valor, maximo) {
+  return String(valor ?? '').trim().slice(0, maximo);
+}
+
+function validarId(id, nombre = 'ID') {
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error(`${nombre} inválido`);
+  }
+}
+
+// Fecha de hoy en la compu, como "AAAA-MM-DD"
+function hoy() {
+  const fecha = new Date();
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  return `${fecha.getFullYear()}-${mes}-${dia}`;
+}
+
+// "2026-02-31" tiene buen formato pero no existe. SQLite no avisa:
+// lo convierte en silencio a "2026-03-03". Por eso lo verificamos acá.
+function esFechaReal(valor) {
+  if (!FECHA_VALIDA.test(valor)) return false;
+  const [anio, mes, dia] = valor.split('-').map(Number);
+  const fecha = new Date(anio, mes - 1, dia);
+  return fecha.getFullYear() === anio && fecha.getMonth() === mes - 1 && fecha.getDate() === dia;
+}
+
+// Fecha que puede venir vacía: devuelve null o "AAAA-MM-DD"
+function fechaOpcional(valor) {
+  const limpio = String(valor ?? '').trim();
+  if (!limpio) return null;
+  if (!esFechaReal(limpio)) throw new Error('Fecha inválida');
+  return limpio;
+}
+
+// Fecha que no puede faltar
+function fechaObligatoria(valor, nombreCampo) {
+  const limpio = String(valor ?? '').trim();
+  if (!esFechaReal(limpio)) throw new Error(`${nombreCampo}: fecha inválida`);
+  return limpio;
+}
+
+module.exports = {
+  iniciarBaseDeDatos,
+  obtenerDb,
+  cerrarBaseDeDatos,
+  texto,
+  validarId,
+  hoy,
+  fechaOpcional,
+  fechaObligatoria,
+  FECHA_VALIDA,
+};
