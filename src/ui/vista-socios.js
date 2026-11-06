@@ -205,6 +205,9 @@
           texto: 'Editar datos',
           alClick: () => abrirFormularioSocio(socio),
         }),
+        ...(socio.telefono && socio.activo
+          ? [botonWhatsApp(socio, socio.estado, 'boton boton-secundario')]
+          : []),
         crear('button', {
           tipo: 'button',
           clase: socio.activo ? 'boton boton-peligro' : 'boton boton-secundario',
@@ -450,5 +453,12 @@
       idSeleccionado = id;
     },
     nuevo: (dni) => abrirFormularioSocio(null, dni),
+    // Para llegar desde el Resumen con la lista ya filtrada
+    filtrarPorEstado: (estado) => {
+      buscador.value = '';
+      filtroMostrar.value = 'activos';
+      filtroEstado.value = estado;
+      idSeleccionado = null;
+    },
   };
 })();

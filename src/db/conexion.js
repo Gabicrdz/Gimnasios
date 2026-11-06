@@ -94,6 +94,30 @@ const MIGRACIONES = [
     `);
   },
 
+  // ===== Versión 4 (etapa 4): búsqueda sin acentos + configuración =====
+  () => {
+    db.exec(`
+      -- Nombre y apellido "normalizados" (sin acentos y en minúscula) para buscar y ordenar
+      ALTER TABLE socios ADD COLUMN busqueda TEXT NOT NULL DEFAULT '';
+      ALTER TABLE socios ADD COLUMN orden TEXT NOT NULL DEFAULT '';
+      CREATE INDEX idx_socios_orden ON socios(orden);
+
+      -- Ajustes del sistema, como pares clave → valor
+      CREATE TABLE configuracion (
+        clave TEXT PRIMARY KEY,
+        valor TEXT NOT NULL
+      );
+      INSERT INTO configuracion (clave, valor) VALUES ('nombre_gimnasio', 'Mi Gimnasio');
+    `);
+
+    // Las columnas nuevas arrancan vacías: las completamos para los socios que ya existen
+    const socios = db.prepare('SELECT id, nombre, apellido FROM socios').all();
+    const actualizar = db.prepare('UPDATE socios SET busqueda = @busqueda, orden = @orden WHERE id = @id');
+    for (const socio of socios) {
+      actualizar.run({ id: socio.id, ...camposDeBusqueda(socio.nombre, socio.apellido) });
+    }
+  },
+
   // Las próximas migraciones van acá abajo.
 ];
 
@@ -157,6 +181,25 @@ function hoy() {
   return `${fecha.getFullYear()}-${mes}-${dia}`;
 }
 
+// "Núñez" → "nunez": sin acentos y en minúscula, para buscar y ordenar bien.
+// normalize('NFD') separa cada letra de su acento ("ú" → "u" + "´")
+// y el replace borra los acentos sueltos.
+function normalizar(valor) {
+  return String(valor ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+// Las dos columnas de búsqueda de un socio.
+// "busqueda" tiene los dos órdenes para encontrar "juan perez" y "perez juan".
+function camposDeBusqueda(nombre, apellido) {
+  const n = normalizar(nombre);
+  const a = normalizar(apellido);
+  return { busqueda: `${n} ${a} | ${a} ${n}`, orden: `${a} ${n}` };
+}
+
 // Hora actual de la compu, como "HH:MM"
 function horaActual() {
   const fecha = new Date();
@@ -197,6 +240,8 @@ module.exports = {
   validarId,
   hoy,
   horaActual,
+  normalizar,
+  camposDeBusqueda,
   fechaOpcional,
   fechaObligatoria,
   FECHA_VALIDA,

@@ -1159,3 +1159,224 @@ input[type='checkbox'] {
     animation: none !important;
   }
 }
+
+/* =====================================================================
+   ETAPA 4A — Resumen, WhatsApp y actualización de precios
+   ===================================================================== */
+
+.acciones-encabezado {
+  display: flex;
+  gap: 10px;
+}
+
+.panel-encabezado {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sin-telefono {
+  color: var(--texto-tenue);
+  font-size: 0.74rem;
+}
+
+/* ---------- Tarjetas del resumen ---------- */
+.tarjetas-resumen {
+  grid-template-columns: 1.4fr 1fr 1fr;
+}
+
+.comparacion {
+  color: var(--texto-tenue);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.tarjeta.destacada .comparacion {
+  color: #aab2bd;
+}
+
+.tarjeta.destacada .comparacion.sube {
+  color: #5fe39a;
+}
+
+.tarjeta.destacada .comparacion.baja {
+  color: #ff8a80;
+}
+
+/* ---------- Barra con el estado de las cuotas ---------- */
+.barra-estados {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: var(--gris-fondo);
+}
+
+.tramo {
+  min-width: 6px;
+}
+
+.tramo.verde {
+  background: var(--verde-fuerte);
+}
+
+.tramo.amarilla {
+  background: var(--ambar-fuerte);
+}
+
+.tramo.roja {
+  background: var(--rojo-fuerte);
+}
+
+.tramo.gris {
+  background: var(--gris-fuerte);
+}
+
+.leyenda-estados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 14px;
+}
+
+.leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border: none;
+  border-radius: var(--radio-chico);
+  background: transparent;
+}
+
+.leyenda-item:hover {
+  background: var(--superficie-suave);
+}
+
+.leyenda-item strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Grilla de paneles ---------- */
+.resumen-grilla {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.lista-resumen {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linea-suave);
+}
+
+.lista-resumen li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--linea-suave);
+  font-size: 0.84rem;
+}
+
+.lista-resumen .nombre-ingreso {
+  grid-column: 1;
+}
+
+.lista-resumen .detalle-lista {
+  grid-column: 1;
+  color: var(--texto-tenue);
+  font-size: 0.76rem;
+}
+
+/* El botón de WhatsApp ocupa las dos filas, a la derecha */
+.lista-resumen li > :last-child {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.lista-resumen .lista-vacia {
+  display: block;
+  color: var(--texto-tenue);
+  font-size: 0.84rem;
+}
+
+/* ---------- Gráfico de horarios ---------- */
+.grafico-horarios {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  height: 190px;
+  padding-top: 6px;
+}
+
+.columna-hora {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pista-hora {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.barra-hora {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  background: #c9d1f7;
+}
+
+/* La hora con más gente, en el color de acento */
+.barra-hora.pico {
+  background: var(--acento);
+}
+
+.valor-hora {
+  min-height: 1.2em;
+  color: var(--texto-suave);
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.etiqueta-hora {
+  color: var(--texto-tenue);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+/* ---------- Diálogo de aumento ---------- */
+.tabla-aumento {
+  margin: 4px 0 14px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.tabla-aumento td.nuevo-precio {
+  color: var(--acento);
+  font-weight: 800;
+}
+
+@media (max-width: 1180px) {
+  .resumen-grilla {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

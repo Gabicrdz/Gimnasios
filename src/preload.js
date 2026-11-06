@@ -8,6 +8,8 @@ contextBridge.exposeInMainWorld('api', {
   crearPlan: (datos) => ipcRenderer.invoke('planes:crear', datos),
   actualizarPlan: (id, datos) => ipcRenderer.invoke('planes:actualizar', id, datos),
   cambiarEstadoPlan: (id, activo) => ipcRenderer.invoke('planes:cambiar-estado', id, activo),
+  calcularAumento: (opciones) => ipcRenderer.invoke('planes:calcular-aumento', opciones),
+  aplicarAumento: (opciones) => ipcRenderer.invoke('planes:aplicar-aumento', opciones),
 
   // Socios
   listarSocios: (filtros) => ipcRenderer.invoke('socios:listar', filtros),
@@ -27,6 +29,14 @@ contextBridge.exposeInMainWorld('api', {
   ingresosDeHoy: () => ipcRenderer.invoke('asistencias:hoy'),
   eliminarIngreso: (id) => ipcRenderer.invoke('asistencias:eliminar', id),
   resumenAsistenciaSocio: (socioId) => ipcRenderer.invoke('asistencias:de-socio', socioId),
+
+  // Resumen y configuración
+  obtenerResumen: () => ipcRenderer.invoke('resumen:obtener'),
+  obtenerConfiguracion: () => ipcRenderer.invoke('configuracion:obtener'),
+  guardarConfiguracion: (datos) => ipcRenderer.invoke('configuracion:guardar', datos),
+
+  // WhatsApp
+  abrirWhatsApp: (socioId, mensaje) => ipcRenderer.invoke('sistema:whatsapp', socioId, mensaje),
 
   // Diálogos
   confirmar: (opciones) => ipcRenderer.invoke('dialogo:confirmar', opciones),

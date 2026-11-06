@@ -3,6 +3,9 @@
 // Cada vista-*.js se registra acá. Ejemplo: vistas.socios = { alMostrar: cargar }
 const vistas = {};
 
+// Ajustes del sistema (se cargan de la base al arrancar)
+let configuracion = { nombre_gimnasio: 'Mi Gimnasio' };
+
 // ---------- Navegación ----------
 function mostrarVista(nombre) {
   for (const seccion of document.querySelectorAll('.vista')) {
@@ -74,12 +77,85 @@ function irAFichaDeSocio(id) {
   mostrarVista('socios');        // y después la mostramos (carga la lista y la ficha)
 }
 
+// Abre la lista de socios filtrada por un estado de cuota ("vencido", "por_vencer"...)
+function irASociosConEstado(estado) {
+  vistas.socios.filtrarPorEstado(estado);
+  mostrarVista('socios');
+}
+
 // Abre el formulario de socio nuevo con el DNI ya escrito
 function irANuevoSocio(dni) {
   mostrarVista('socios');
   vistas.socios.nuevo(dni);
 }
 
-// Cuando terminaron de cargar todos los scripts, arrancamos en Ingreso:
-// es la pantalla que queda abierta en la recepción.
-document.addEventListener('DOMContentLoaded', () => mostrarVista('ingreso'));
+// ---------- WhatsApp ----------
+// Arma el mensaje según la situación del socio. tipo: 'cumpleanios', 'sin_venir'
+// o el estado de su cuota ('al_dia', 'por_vencer', 'vencido', 'sin_pagos').
+function mensajeWhatsApp(socio, tipo) {
+  const gimnasio = configuracion.nombre_gimnasio;
+  const vence = socio.vence_el ? fechaCorta(socio.vence_el) : '';
+
+  switch (tipo) {
+    case 'cumpleanios':
+      return `¡Feliz cumpleaños, ${socio.nombre}! 🎂 Todo el equipo de ${gimnasio} te desea un gran día.`;
+    case 'sin_venir':
+      return `¡Hola ${socio.nombre}! Hace unos días que no te vemos por ${gimnasio}. ¿Todo bien? ¡Te esperamos!`;
+    case 'vencido':
+      return `¡Hola ${socio.nombre}! Te escribimos de ${gimnasio}: tu cuota venció el ${vence}. Cuando quieras, pasá por recepción para renovarla. ¡Te esperamos!`;
+    case 'por_vencer':
+    case 'al_dia':
+      return `¡Hola ${socio.nombre}! Te recordamos que tu cuota en ${gimnasio} vence el ${vence}. ¡Te esperamos!`;
+    default:
+      return `¡Hola ${socio.nombre}! Te escribimos de ${gimnasio}.`;
+  }
+}
+
+async function avisarPorWhatsApp(socio, tipo) {
+  const resultado = await pedir(window.api.abrirWhatsApp(socio.id, mensajeWhatsApp(socio, tipo)));
+  if (resultado !== null) mostrarMensaje('Abriendo WhatsApp…');
+}
+
+// Botón de WhatsApp (solo si el socio tiene teléfono)
+function botonWhatsApp(socio, tipo, clase = 'boton-texto') {
+  if (!socio.telefono) return crear('span', { clase: 'sin-telefono', texto: 'Sin teléfono' });
+  return crear('button', {
+    tipo: 'button',
+    clase,
+    texto: 'WhatsApp',
+    titulo: 'Abrir WhatsApp con un mensaje ya escrito',
+    alClick: () => avisarPorWhatsApp(socio, tipo),
+  });
+}
+
+// ---------- Marca del gimnasio ----------
+// "Box Formosa Centro" → "BF"
+function inicialesGimnasio(nombre) {
+  const palabras = nombre.split(/\s+/).filter(Boolean);
+  return palabras
+    .slice(0, 2)
+    .map((palabra) => palabra.charAt(0))
+    .join('')
+    .toUpperCase();
+}
+
+function aplicarMarca() {
+  const nombre = configuracion.nombre_gimnasio;
+  document.querySelector('.marca strong').textContent = nombre;
+  document.querySelector('.logo').textContent = inicialesGimnasio(nombre);
+  document.title = nombre;
+}
+
+async function cargarConfiguracion() {
+  const datos = await pedir(window.api.obtenerConfiguracion());
+  if (datos === null) return;
+  configuracion = datos;
+  aplicarMarca();
+}
+
+// Cuando terminaron de cargar todos los scripts: primero los ajustes y después
+// la pantalla de Ingreso, que es la que queda abierta en la recepción.
+document.addEventListener('DOMContentLoaded', async () => {
+  await cargarConfiguracion();
+  mostrarVista('ingreso');
+});

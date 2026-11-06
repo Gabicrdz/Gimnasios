@@ -1,12 +1,15 @@
 // index.js — Proceso MAIN del sistema de gimnasio.
 
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('node:path');
 const conexion = require('./db/conexion');
 const planes = require('./db/planes');
 const socios = require('./db/socios');
 const pagos = require('./db/pagos');
 const asistencias = require('./db/asistencias');
+const resumen = require('./db/resumen');
+const configuracion = require('./db/configuracion');
+const { armarEnlaceWhatsApp } = require('./whatsapp');
 
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -36,6 +39,8 @@ manejar('planes:listar', (opciones) => planes.listarPlanes(opciones));
 manejar('planes:crear', (datos) => planes.crearPlan(datos));
 manejar('planes:actualizar', (id, datos) => planes.actualizarPlan(id, datos));
 manejar('planes:cambiar-estado', (id, activo) => planes.cambiarEstadoPlan(id, activo));
+manejar('planes:calcular-aumento', (opciones) => planes.calcularAumento(opciones));
+manejar('planes:aplicar-aumento', (opciones) => planes.aplicarAumento(opciones));
 
 // ---------- Socios ----------
 manejar('socios:listar', (filtros) => socios.listarSocios(filtros));
@@ -55,6 +60,20 @@ manejar('asistencias:registrar', (entrada) => asistencias.registrarIngreso(entra
 manejar('asistencias:hoy', () => asistencias.ingresosDeHoy());
 manejar('asistencias:eliminar', (id) => asistencias.eliminarIngreso(id));
 manejar('asistencias:de-socio', (socioId) => asistencias.resumenAsistenciaSocio(socioId));
+
+// ---------- Resumen y configuración ----------
+manejar('resumen:obtener', () => resumen.obtenerResumen());
+manejar('configuracion:obtener', () => configuracion.obtenerConfiguracion());
+manejar('configuracion:guardar', (datos) => configuracion.guardarConfiguracion(datos));
+
+// ---------- WhatsApp ----------
+// La ventana solo manda el id del socio y el texto. El teléfono lo busca el main en la
+// base y el enlace lo arma el main: así la ventana no puede abrir cualquier dirección.
+manejar('sistema:whatsapp', async (socioId, mensaje) => {
+  const socio = socios.obtenerSocio(socioId);
+  await shell.openExternal(armarEnlaceWhatsApp(socio.telefono, mensaje));
+  return true;
+});
 
 // ---------- Confirmación genérica ----------
 manejar('dialogo:confirmar', async (opciones) => {

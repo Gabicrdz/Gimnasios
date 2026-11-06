@@ -87,4 +87,51 @@ function cambiarEstadoPlan(id, activo) {
   return { id, activo: Boolean(activo) };
 }
 
-module.exports = { listarPlanes, crearPlan, actualizarPlan, cambiarEstadoPlan };
+// ---------- Actualización masiva de precios ----------
+// Redondeos permitidos, en centavos: sin redondeo, a $100, a $500 o a $1.000
+const REDONDEOS = [1, 10000, 50000, 100000];
+
+// Calcula los precios nuevos de los planes activos SIN guardar nada (vista previa)
+function calcularAumento(opciones) {
+  const porcentaje = Number(opciones?.porcentaje);
+  const redondeo = Number(opciones?.redondeo);
+
+  if (!Number.isFinite(porcentaje) || porcentaje <= 0 || porcentaje > 200) {
+    throw new Error('El porcentaje tiene que ser mayor a 0 y como máximo 200');
+  }
+  if (!REDONDEOS.includes(redondeo)) throw new Error('Redondeo inválido');
+
+  const planes = obtenerDb()
+    .prepare('SELECT id, nombre, precio_centavos FROM planes WHERE activo = 1 ORDER BY precio_centavos')
+    .all();
+
+  return planes.map((plan) => {
+    const conAumento = plan.precio_centavos * (1 + porcentaje / 100);
+    // Redondea al múltiplo más cercano (por ejemplo, a $100): 27.540 → 27.500
+    const nuevo = Math.max(redondeo, Math.round(conAumento / redondeo) * redondeo);
+    return { id: plan.id, nombre: plan.nombre, actual: plan.precio_centavos, nuevo };
+  });
+}
+
+// Aplica el aumento a todos los planes activos, todo junto o nada
+function aplicarAumento(opciones) {
+  const db = obtenerDb();
+  const cambios = calcularAumento(opciones); // se recalcula acá: no confiamos en la ventana
+  const actualizar = db.prepare('UPDATE planes SET precio_centavos = ? WHERE id = ?');
+
+  const aplicar = db.transaction(() => {
+    for (const cambio of cambios) actualizar.run(cambio.nuevo, cambio.id);
+  });
+  aplicar();
+
+  return { cantidad: cambios.length };
+}
+
+module.exports = {
+  listarPlanes,
+  crearPlan,
+  actualizarPlan,
+  cambiarEstadoPlan,
+  calcularAumento,
+  aplicarAumento,
+};

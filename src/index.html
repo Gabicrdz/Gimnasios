@@ -31,6 +31,7 @@
         </div>
         <nav class="pestanas" aria-label="Secciones">
           <button class="nav-boton" type="button" data-vista="ingreso">Ingreso</button>
+          <button class="nav-boton" type="button" data-vista="resumen">Resumen</button>
           <button class="nav-boton" type="button" data-vista="socios">Socios</button>
           <button class="nav-boton" type="button" data-vista="pagos">Pagos</button>
           <button class="nav-boton" type="button" data-vista="planes">Planes</button>
@@ -73,6 +74,78 @@
               <ul id="lista-ingresos" class="lista-ingresos"></ul>
               <p id="ingresos-vacio" class="vacio" hidden>Todavía no ingresó nadie hoy.</p>
             </aside>
+          </div>
+        </section>
+
+        <!-- ===== Vista: Resumen (para el dueño) ===== -->
+        <section id="vista-resumen" class="vista" hidden>
+          <header class="encabezado-vista">
+            <h1>Resumen</h1>
+            <p id="resumen-fecha" class="reloj"></p>
+          </header>
+
+          <div class="tarjetas tarjetas-resumen">
+            <article class="tarjeta destacada">
+              <span>Recaudado este mes</span>
+              <strong id="res-recaudado">—</strong>
+              <small id="res-comparacion" class="comparacion"></small>
+            </article>
+            <article class="tarjeta">
+              <span>Socios activos</span>
+              <strong id="res-activos">—</strong>
+              <small id="res-nuevos" class="comparacion"></small>
+            </article>
+            <article class="tarjeta">
+              <span>Ingresos de hoy</span>
+              <strong id="res-hoy">—</strong>
+              <small id="res-promedio" class="comparacion"></small>
+            </article>
+          </div>
+
+          <article class="panel">
+            <h2>Estado de las cuotas</h2>
+            <div id="res-barra" class="barra-estados"></div>
+            <div id="res-leyenda" class="leyenda-estados"></div>
+          </article>
+
+          <div class="resumen-grilla">
+            <article class="panel">
+              <div class="panel-encabezado">
+                <h2>Por vencer</h2>
+                <button id="res-ver-por-vencer" class="boton-texto" type="button">Ver todos</button>
+              </div>
+              <ul id="res-por-vencer" class="lista-resumen"></ul>
+            </article>
+
+            <article class="panel">
+              <div class="panel-encabezado">
+                <h2>Cuotas vencidas</h2>
+                <button id="res-ver-vencidos" class="boton-texto" type="button">Ver todas</button>
+              </div>
+              <ul id="res-vencidos" class="lista-resumen"></ul>
+            </article>
+
+            <article class="panel">
+              <div class="panel-encabezado">
+                <h2>Horarios con más gente</h2>
+                <span class="texto-tenue">Últimos 30 días</span>
+              </div>
+              <div id="res-horarios" class="grafico-horarios"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-encabezado">
+                <h2 id="res-titulo-sin-venir">No vienen hace 14 días o más</h2>
+              </div>
+              <ul id="res-sin-venir" class="lista-resumen"></ul>
+            </article>
+
+            <article class="panel">
+              <div class="panel-encabezado">
+                <h2>Cumpleaños de hoy</h2>
+              </div>
+              <ul id="res-cumples" class="lista-resumen"></ul>
+            </article>
           </div>
         </section>
 
@@ -177,9 +250,14 @@
         <section id="vista-planes" class="vista" hidden>
           <header class="encabezado-vista">
             <h1>Planes</h1>
-            <button id="btn-nuevo-plan" class="boton boton-primario" type="button">
-              + Nuevo plan
-            </button>
+            <div class="acciones-encabezado">
+              <button id="btn-aumento" class="boton boton-secundario" type="button">
+                Actualizar precios
+              </button>
+              <button id="btn-nuevo-plan" class="boton boton-primario" type="button">
+                + Nuevo plan
+              </button>
+            </div>
           </header>
 
           <label class="casilla">
@@ -399,12 +477,65 @@
       </form>
     </dialog>
 
+    <!-- ===== Diálogo: actualizar precios ===== -->
+    <dialog id="dialogo-aumento" class="dialogo dialogo-ancho">
+      <form id="form-aumento">
+        <h2>Actualizar precios</h2>
+        <p class="subtitulo-dialogo">Aumenta todos los planes activos de una sola vez.</p>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="aumento-porcentaje">Aumento (%)</label>
+            <input
+              id="aumento-porcentaje"
+              name="porcentaje"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              required
+            />
+          </div>
+          <div class="campo">
+            <label for="aumento-redondeo">Redondear a</label>
+            <select id="aumento-redondeo" name="redondeo">
+              <option value="1">Sin redondeo</option>
+              <option value="10000">$100</option>
+              <option value="50000">$500</option>
+              <option value="100000">$1.000</option>
+            </select>
+          </div>
+        </div>
+
+        <table class="tabla tabla-aumento">
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th class="derecha">Precio actual</th>
+              <th class="derecha">Precio nuevo</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-aumento"></tbody>
+        </table>
+
+        <p class="ayuda">Los pagos ya registrados no cambian. Los planes desactivados tampoco.</p>
+        <p id="error-aumento" class="error-form"></p>
+
+        <div class="acciones">
+          <button class="boton boton-primario" type="submit">Aplicar aumento</button>
+          <button id="btn-cancelar-aumento" class="boton boton-secundario" type="button">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </dialog>
+
     <div id="mensaje" class="mensaje" role="status"></div>
 
     <!-- Orden: utilidades → app (navegación) → vistas -->
     <script src="ui/utilidades.js"></script>
     <script src="ui/app.js"></script>
     <script src="ui/vista-ingreso.js"></script>
+    <script src="ui/vista-resumen.js"></script>
     <script src="ui/vista-socios.js"></script>
     <script src="ui/vista-pagos.js"></script>
     <script src="ui/vista-planes.js"></script>

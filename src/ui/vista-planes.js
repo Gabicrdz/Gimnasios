@@ -120,6 +120,75 @@
     cargar();
   }
 
+  // ---------- Actualizar todos los precios ----------
+  const dialogoAumento = document.getElementById('dialogo-aumento');
+  const formAumento = document.getElementById('form-aumento');
+  const tablaAumento = document.getElementById('tabla-aumento');
+  const errorAumento = document.getElementById('error-aumento');
+
+  function opcionesAumento() {
+    return {
+      porcentaje: Number(String(formAumento.elements.porcentaje.value).replace(',', '.')),
+      redondeo: Number(formAumento.elements.redondeo.value),
+    };
+  }
+
+  // Vista previa: pide al main los precios nuevos SIN guardarlos
+  async function actualizarVistaPrevia() {
+    errorAumento.textContent = '';
+    const cambios = await pedir(window.api.calcularAumento(opcionesAumento()), errorAumento);
+    if (cambios === null) {
+      tablaAumento.replaceChildren();
+      return;
+    }
+
+    tablaAumento.replaceChildren(
+      ...cambios.map((c) =>
+        crear('tr', {}, [
+          crear('td', { texto: c.nombre }),
+          crear('td', { clase: 'derecha', texto: pesos(c.actual) }),
+          crear('td', { clase: 'derecha nuevo-precio', texto: pesos(c.nuevo) }),
+        ])
+      )
+    );
+  }
+
+  let temporizadorVistaPrevia;
+  formAumento.addEventListener('input', () => {
+    clearTimeout(temporizadorVistaPrevia);
+    temporizadorVistaPrevia = setTimeout(actualizarVistaPrevia, 200);
+  });
+
+  document.getElementById('btn-aumento').addEventListener('click', () => {
+    formAumento.elements.porcentaje.value = '10';
+    formAumento.elements.redondeo.value = '10000';
+    dialogoAumento.showModal();
+    formAumento.elements.porcentaje.select();
+    actualizarVistaPrevia();
+  });
+
+  formAumento.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    const opciones = opcionesAumento();
+
+    const confirmado = await confirmar({
+      titulo: 'Actualizar precios',
+      mensaje: `¿Aumentar ${String(opciones.porcentaje).replace('.', ',')}% todos los planes activos?`,
+      detalle: 'Los pagos ya registrados no cambian: guardan el precio del día en que se cobraron.',
+      boton: 'Actualizar',
+    });
+    if (!confirmado) return;
+
+    const resultado = await pedir(window.api.aplicarAumento(opciones), errorAumento);
+    if (resultado === null) return;
+
+    dialogoAumento.close();
+    mostrarMensaje(`Precios actualizados en ${resultado.cantidad} planes`);
+    cargar();
+  });
+
+  document.getElementById('btn-cancelar-aumento').addEventListener('click', () => dialogoAumento.close());
+
   // ---------- Eventos ----------
   btnNuevo.addEventListener('click', () => abrirFormulario(null));
   btnCancelar.addEventListener('click', () => dialogo.close());

@@ -1,6 +1,14 @@
 // db/socios.js — Socios del gimnasio y el estado de su cuota.
 
-const { obtenerDb, texto, validarId, fechaOpcional, hoy } = require('./conexion');
+const {
+  obtenerDb,
+  texto,
+  validarId,
+  fechaOpcional,
+  hoy,
+  normalizar,
+  camposDeBusqueda,
+} = require('./conexion');
 
 // "Por vencer" = le quedan esta cantidad de días o menos
 const DIAS_AVISO = 5;
@@ -75,8 +83,7 @@ function listarSocios(filtros) {
     .prepare(
       `SELECT * FROM (${CONSULTA_SOCIOS}) AS s
        WHERE (
-           s.nombre || ' ' || s.apellido LIKE @patron
-           OR s.apellido || ' ' || s.nombre LIKE @patron
+           s.busqueda LIKE @patron
            OR (@dni <> '' AND s.dni LIKE '%' || @dni || '%')
          )
          AND (
@@ -87,10 +94,15 @@ function listarSocios(filtros) {
          AND (@estado = 'todos' OR s.estado = @estado)
        ORDER BY
          CASE WHEN @estado = 'vencido' THEN s.vence_el END,
-         s.apellido COLLATE NOCASE,
-         s.nombre COLLATE NOCASE`
+         s.orden`
     )
-    .all({ patron: `%${busqueda}%`, dni: normalizarDni(busqueda), mostrar, estado, hoy: hoy() });
+    .all({
+      patron: `%${normalizar(busqueda)}%`, // "pérez" o "PEREZ" → "%perez%"
+      dni: normalizarDni(busqueda),
+      mostrar,
+      estado,
+      hoy: hoy(),
+    });
 }
 
 function obtenerSocio(id) {
@@ -107,10 +119,12 @@ function crearSocio(datos) {
   try {
     const resultado = obtenerDb()
       .prepare(
-        `INSERT INTO socios (nombre, apellido, dni, telefono, fecha_nacimiento, plan_id, notas)
-         VALUES (@nombre, @apellido, @dni, @telefono, @fechaNacimiento, @planId, @notas)`
+        `INSERT INTO socios (nombre, apellido, dni, telefono, fecha_nacimiento, plan_id, notas,
+                             busqueda, orden)
+         VALUES (@nombre, @apellido, @dni, @telefono, @fechaNacimiento, @planId, @notas,
+                 @busqueda, @orden)`
       )
-      .run(socio);
+      .run({ ...socio, ...camposDeBusqueda(socio.nombre, socio.apellido) });
     return { id: resultado.lastInsertRowid };
   } catch (error) {
     throw traducirError(error);
@@ -125,10 +139,11 @@ function actualizarSocio(id, datos) {
       .prepare(
         `UPDATE socios
          SET nombre = @nombre, apellido = @apellido, dni = @dni, telefono = @telefono,
-             fecha_nacimiento = @fechaNacimiento, plan_id = @planId, notas = @notas
+             fecha_nacimiento = @fechaNacimiento, plan_id = @planId, notas = @notas,
+             busqueda = @busqueda, orden = @orden
          WHERE id = @id`
       )
-      .run({ ...socio, id });
+      .run({ ...socio, ...camposDeBusqueda(socio.nombre, socio.apellido), id });
     if (resultado.changes === 0) throw new Error('El socio ya no existe');
     return { id };
   } catch (error) {
