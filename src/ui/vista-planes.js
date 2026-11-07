@@ -26,7 +26,7 @@
         crear('tr', { clase: plan.activo ? '' : 'inactivo' }, [
           crear('td', {}, [crear('strong', { texto: plan.nombre })]),
           crear('td', { clase: 'derecha', texto: pesos(plan.precio_centavos) }),
-          crear('td', { texto: `${plan.duracion_dias} días` }),
+          crear('td', { texto: `${plan.duracion_dias} ${plan.duracion_dias === 1 ? 'día' : 'días'}` }),
           crear('td', { clase: 'derecha', texto: plan.cantidad_socios }),
           crear('td', {}, [
             crear('span', {
