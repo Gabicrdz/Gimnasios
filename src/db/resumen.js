@@ -47,9 +47,15 @@ function obtenerResumen() {
     .filter((s) => s.estado === 'vencido')
     .sort((a, b) => b.dias_restantes - a.dias_restantes);
 
-  const cumpleanios = activos.filter(
-    (s) => s.fecha_nacimiento && s.fecha_nacimiento.slice(5) === fechaHoy.slice(5)
-  );
+  // Los nacidos un 29 de febrero festejan el 28 cuando el año no es bisiesto
+  const diaYMes = fechaHoy.slice(5);
+  const anio = Number(fechaHoy.slice(0, 4));
+  const esBisiesto = (anio % 4 === 0 && anio % 100 !== 0) || anio % 400 === 0;
+  const cumpleHoy = (fechaNacimiento) =>
+    fechaNacimiento.slice(5) === diaYMes ||
+    (!esBisiesto && diaYMes === '02-28' && fechaNacimiento.slice(5) === '02-29');
+
+  const cumpleanios = activos.filter((s) => s.fecha_nacimiento && cumpleHoy(s.fecha_nacimiento));
 
   const nuevosEsteMes = activos.filter((s) => s.creado_en.slice(0, 7) === mes).length;
 

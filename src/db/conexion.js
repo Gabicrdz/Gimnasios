@@ -6,6 +6,7 @@ const path = require('node:path');
 const { app } = require('electron');
 
 let db = null;
+let rutaActual = null;
 
 // ---------- Migraciones ----------
 // Cada función de la lista es una versión de la base (posición 0 = versión 1).
@@ -139,8 +140,14 @@ function migrar() {
 }
 
 // ---------- Abrir y cerrar ----------
+// Dónde está guardada la base (la usan las copias de seguridad)
+function rutaBaseDeDatos() {
+  return rutaActual ?? path.join(app.getPath('userData'), 'gimnasio.db');
+}
+
 function iniciarBaseDeDatos() {
-  const ruta = path.join(app.getPath('userData'), 'gimnasio.db');
+  const ruta = rutaBaseDeDatos();
+  rutaActual = ruta;
   db = new Database(ruta);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
@@ -157,7 +164,15 @@ function obtenerDb() {
 
 function cerrarBaseDeDatos() {
   if (db) db.close();
+  db = null; // así nadie la usa cerrada por error
 }
+
+function baseAbierta() {
+  return db !== null;
+}
+
+// Versión de la base que espera este programa = cantidad de migraciones
+const VERSION_BASE = MIGRACIONES.length;
 
 // ---------- Ayudantes para validar ----------
 const FECHA_VALIDA = /^\d{4}-\d{2}-\d{2}$/;
@@ -236,6 +251,9 @@ module.exports = {
   iniciarBaseDeDatos,
   obtenerDb,
   cerrarBaseDeDatos,
+  baseAbierta,
+  rutaBaseDeDatos,
+  VERSION_BASE,
   texto,
   validarId,
   hoy,

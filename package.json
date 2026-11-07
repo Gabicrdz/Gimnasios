@@ -1,9 +1,9 @@
 {
   "name": "gimnasio",
-  "productName": "gimnasio",
+  "productName": "Mi Gimnasio",
   "version": "1.0.0",
   "private": true,
-  "description": "My Electron application description",
+  "description": "Sistema de gestión para gimnasios: socios, cuotas, pagos y asistencia",
   "keywords": [],
   "license": "MIT",
   "author": {
@@ -16,7 +16,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "release": "electron-forge release",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "test": "node --test --disable-warning=ExperimentalWarning \"pruebas/*.test.js\""
   },
   "dependencies": {
     "@fontsource/barlow": "^5.3.0",

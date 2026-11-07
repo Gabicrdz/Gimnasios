@@ -15,6 +15,12 @@ const DIAS_AVISO = 5;
 
 const ESTADOS = ['al_dia', 'por_vencer', 'vencido', 'sin_pagos'];
 
+// En LIKE, "%" y "_" son comodines. Si alguien busca "%", los escapamos
+// con una barra invertida para que se busquen como texto y no traigan a todos.
+function escaparLike(texto) {
+  return texto.replace(/[\\%_]/g, (caracter) => `\\${caracter}`);
+}
+
 // "30.123.456" o "30 123 456" → "30123456" (en la base, siempre solo números)
 function normalizarDni(valor) {
   return String(valor ?? '').replace(/\D/g, '');
@@ -83,7 +89,7 @@ function listarSocios(filtros) {
     .prepare(
       `SELECT * FROM (${CONSULTA_SOCIOS}) AS s
        WHERE (
-           s.busqueda LIKE @patron
+           s.busqueda LIKE @patron ESCAPE '\\'
            OR (@dni <> '' AND s.dni LIKE '%' || @dni || '%')
          )
          AND (
@@ -97,7 +103,7 @@ function listarSocios(filtros) {
          s.orden`
     )
     .all({
-      patron: `%${normalizar(busqueda)}%`, // "pérez" o "PEREZ" → "%perez%"
+      patron: `%${escaparLike(normalizar(busqueda))}%`, // "pérez" o "PEREZ" → "%perez%"
       dni: normalizarDni(busqueda),
       mostrar,
       estado,

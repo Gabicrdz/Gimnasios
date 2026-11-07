@@ -1380,3 +1380,82 @@ input[type='checkbox'] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* =====================================================================
+   ETAPA 4B — Ajustes, copias de seguridad y teclado
+   ===================================================================== */
+
+/* Filas de la tabla de socios: foco visible al moverse con Tab */
+.tabla-seleccionable tbody tr:focus-visible {
+  outline: 3px solid var(--acento-foco);
+  outline-offset: -3px;
+}
+
+.ajustes-grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.ajustes-grilla h2 {
+  margin-bottom: 14px;
+}
+
+/* Campo y botón en la misma línea */
+.form-en-linea {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.form-en-linea .campo {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.lista-sistema {
+  grid-template-columns: 180px 1fr;
+}
+
+.form-en-linea + .ayuda {
+  margin: 8px 0 0;
+}
+
+.lista-sistema dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.carpeta-copias {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.carpeta-copias code {
+  padding: 6px 10px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-chico);
+  background: var(--superficie-suave);
+  font-family: Consolas, 'Cascadia Mono', monospace;
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+
+.aviso-copias {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--ambar-fuerte);
+  border-radius: var(--radio-chico);
+  background: #fffbeb;
+  color: var(--ambar);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.tabla-copias {
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+}

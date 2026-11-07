@@ -4,12 +4,17 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     asar: true,
+    // Ícono del programa (sin extensión: Electron elige .ico en Windows)
+    icon: './assets/icono',
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        // Ícono del instalador "Mi Gimnasio Setup.exe"
+        setupIcon: './assets/icono.ico',
+      },
     },
     {
       name: '@electron-forge/maker-zip',

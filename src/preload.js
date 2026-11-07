@@ -38,6 +38,15 @@ contextBridge.exposeInMainWorld('api', {
   // WhatsApp
   abrirWhatsApp: (socioId, mensaje) => ipcRenderer.invoke('sistema:whatsapp', socioId, mensaje),
 
+  // Copias de seguridad
+  listarCopias: () => ipcRenderer.invoke('copias:listar'),
+  hacerCopia: () => ipcRenderer.invoke('copias:hacer'),
+  elegirCarpetaCopias: () => ipcRenderer.invoke('copias:elegir-carpeta'),
+  restaurarCopia: (nombre) => ipcRenderer.invoke('copias:restaurar', nombre ?? null),
+
+  // Sistema
+  infoSistema: () => ipcRenderer.invoke('sistema:info'),
+
   // Diálogos
   confirmar: (opciones) => ipcRenderer.invoke('dialogo:confirmar', opciones),
 });

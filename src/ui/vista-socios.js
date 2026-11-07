@@ -88,6 +88,15 @@
         ]);
         fila.dataset.id = socio.id;
         fila.addEventListener('click', () => seleccionar(socio.id));
+
+        // También con teclado: Tab para llegar a la fila, Enter o Espacio para abrirla
+        fila.tabIndex = 0;
+        fila.addEventListener('keydown', (evento) => {
+          if (evento.key === 'Enter' || evento.key === ' ') {
+            evento.preventDefault();
+            seleccionar(socio.id);
+          }
+        });
         return fila;
       })
     );
