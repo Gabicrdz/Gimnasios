@@ -8,6 +8,7 @@ Sistema de gestión para gimnasios chicos: socios, cuotas, pagos y control de in
 
 ## Qué hace
 
+- Usuarios con PIN y dos roles (administrador y recepción): cada pago queda registrado con quién lo cobró y quién lo anuló.
 - Ingreso por DNI o con lector de código de barras: avisa al instante si la cuota está al día o vencida.
 - Cobro con vencimiento automático: calcula hasta qué día cubre cada pago.
 - Resumen del gimnasio: recaudación del mes, estado de las cuotas y horarios con más gente.
@@ -15,9 +16,25 @@ Sistema de gestión para gimnasios chicos: socios, cuotas, pagos y control de in
 - Planes con aumento de precios y vista previa antes de aplicar.
 - Copias de seguridad automáticas y manuales que se restauran desde el sistema.
 
+## Usuarios y permisos
+
+Al abrir el sistema por primera vez se crea al administrador (el dueño). Después, cada persona entra eligiendo su nombre y escribiendo su PIN de 4 a 6 números.
+
+| | Recepción | Administrador |
+|---|:---:|:---:|
+| Control de ingreso, alta y edición de socios | ✔ | ✔ |
+| Registrar pagos | ✔ | ✔ |
+| Anular pagos, dar de baja socios | | ✔ |
+| Planes y aumento de precios | | ✔ |
+| Resumen del gimnasio | | ✔ |
+| Copias de seguridad, ajustes y usuarios | | ✔ |
+
 ## Aspectos técnicos
 
 - **Arquitectura segura de Electron:** la interfaz no accede a los archivos ni a internet; todo pasa por canales IPC validados.
+- **PIN protegido:** nunca se guarda el PIN, sino su resultado con scrypt y una sal distinta para cada usuario. Tras 5 intentos fallidos hay que esperar 30 segundos.
+- **Permisos en el proceso principal:** cada canal IPC declara quién puede usarlo (libre, con sesión o solo administrador) y se revisa antes de ejecutar; esconder un botón en la interfaz no alcanza.
+- **Siempre queda un administrador:** el sistema no deja dar de baja ni cambiar de rol al último.
 - **Actualizaciones sin perder datos:** la base de datos usa migraciones versionadas.
 
 ## Tecnologías
@@ -43,7 +60,8 @@ La carpeta `datos-prueba` tiene scripts SQL con datos de ejemplo.
 src/
   index.js     proceso principal de Electron
   preload.js   puente seguro entre la ventana y el proceso principal
-  db/          acceso a SQLite, migraciones y copias de seguridad
+  sesion.js    quién está usando el sistema y qué permisos tiene
+  db/          acceso a SQLite, usuarios, migraciones y copias de seguridad
   ui/          pantallas de la aplicación (HTML, CSS y JavaScript)
 pruebas/       pruebas automatizadas con node:test
 datos-prueba/  scripts SQL con datos de ejemplo
