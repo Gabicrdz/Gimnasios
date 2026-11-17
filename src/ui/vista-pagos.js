@@ -40,6 +40,10 @@
             texto: `${fechaCorta(pago.cubre_desde)} al ${fechaCorta(pago.cubre_hasta)}`,
           }),
           crear('td', { texto: METODOS_PAGO[pago.metodo] }),
+          crear('td', {
+            texto: pago.cobrado_por ?? '—',
+            titulo: pago.anulado_por_nombre ? `Anulado por ${pago.anulado_por_nombre}` : '',
+          }),
           crear('td', { clase: 'derecha monto', texto: pesos(pago.monto_centavos) }),
           crear('td', { clase: 'acciones-fila' }, [
             pago.anulado

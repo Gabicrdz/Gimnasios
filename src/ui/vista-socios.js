@@ -217,12 +217,17 @@
         ...(socio.telefono && socio.activo
           ? [botonWhatsApp(socio, socio.estado, 'boton boton-secundario')]
           : []),
-        crear('button', {
-          tipo: 'button',
-          clase: socio.activo ? 'boton boton-peligro' : 'boton boton-secundario',
-          texto: socio.activo ? 'Dar de baja' : 'Reactivar',
-          alClick: () => cambiarEstado(socio),
-        }),
+        // Dar de baja y reactivar: solo el administrador
+        ...(esAdmin()
+          ? [
+              crear('button', {
+                tipo: 'button',
+                clase: socio.activo ? 'boton boton-peligro' : 'boton boton-secundario',
+                texto: socio.activo ? 'Dar de baja' : 'Reactivar',
+                alClick: () => cambiarEstado(socio),
+              }),
+            ]
+          : []),
       ])
     );
   }
@@ -244,9 +249,11 @@
             texto:
               `Cubre del ${fechaCorta(pago.cubre_desde)} al ${fechaCorta(pago.cubre_hasta)}` +
               ` · ${METODOS_PAGO[pago.metodo]}` +
+              (pago.cobrado_por ? ` · Cobró ${pago.cobrado_por}` : '') +
               (pago.anulado ? ' · Anulado' : ''),
           }),
-          pago.anulado
+          // Anular un pago: solo el administrador
+          pago.anulado || !esAdmin()
             ? crear('span')
             : crear('button', {
                 tipo: 'button',

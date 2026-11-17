@@ -10,6 +10,8 @@ const asistencias = require('./db/asistencias');
 const resumen = require('./db/resumen');
 const configuracion = require('./db/configuracion');
 const copias = require('./db/copias');
+const usuarios = require('./db/usuarios');
+const sesion = require('./sesion');
 const { armarEnlaceWhatsApp } = require('./whatsapp');
 
 if (require('electron-squirrel-startup')) {
@@ -27,10 +29,14 @@ app.setPath('userData', path.join(app.getPath('appData'), 'gimnasio'));
 
 let ventana = null;
 
-// Siempre responde { ok: true, datos } o { ok: false, error }
-function manejar(canal, funcion) {
+// Siempre responde { ok: true, datos } o { ok: false, error }.
+// El 2.º parámetro es el PERMISO ('libre', 'sesion' o 'admin'): se revisa ANTES de ejecutar
+// el canal. Es obligatorio en todos, así un canal nuevo no puede quedar abierto por olvido.
+function manejar(canal, permiso, funcion) {
+  if (!sesion.PERMISOS.includes(permiso)) throw new Error(`Canal ${canal}: permiso inválido`);
   ipcMain.handle(canal, async (evento, ...argumentos) => {
     try {
+      sesion.requerir(permiso);
       const datos = await funcion(...argumentos);
       return { ok: true, datos };
     } catch (error) {
@@ -40,52 +46,80 @@ function manejar(canal, funcion) {
   });
 }
 
+// ---------- Acceso: usuarios, PIN y sesión ----------
+manejar('sesion:estado', 'libre', () => ({
+  usuario: sesion.sesionActual(),
+  hayUsuarios: usuarios.hayUsuarios(),
+  usuarios: usuarios.hayUsuarios() ? usuarios.listarParaIngreso() : [],
+}));
+manejar('sesion:entrar', 'libre', (usuarioId, pin) => sesion.iniciarSesion(usuarioId, pin));
+manejar('sesion:crear-admin', 'libre', (datos) => {
+  const { id } = usuarios.crearPrimerAdmin(datos);
+  return sesion.abrirSesionDe({ id, nombre: String(datos.nombre).trim().slice(0, 40), rol: 'admin' });
+});
+manejar('sesion:salir', 'libre', () => {
+  sesion.cerrarSesion();
+  return true;
+});
+manejar('sesion:cambiar-pin', 'sesion', (pinActual, pinNuevo) =>
+  usuarios.cambiarPin(sesion.sesionActual().id, pinActual, pinNuevo)
+);
+manejar('usuarios:listar', 'admin', () => usuarios.listarUsuarios());
+manejar('usuarios:guardar', 'admin', (id, datos) => {
+  const resultado = id ? usuarios.actualizarUsuario(id, datos) : usuarios.crearUsuario(datos);
+  if (id) sesion.refrescarSesion({ id, nombre: String(datos.nombre).trim().slice(0, 40), rol: datos.rol });
+  return resultado;
+});
+manejar('usuarios:cambiar-estado', 'admin', (id, activo) =>
+  usuarios.cambiarEstadoUsuario(id, activo === true, sesion.sesionActual().id)
+);
+
 // ---------- Planes ----------
-manejar('planes:listar', (opciones) => planes.listarPlanes(opciones));
-manejar('planes:crear', (datos) => planes.crearPlan(datos));
-manejar('planes:actualizar', (id, datos) => planes.actualizarPlan(id, datos));
-manejar('planes:cambiar-estado', (id, activo) => planes.cambiarEstadoPlan(id, activo));
-manejar('planes:calcular-aumento', (opciones) => planes.calcularAumento(opciones));
-manejar('planes:aplicar-aumento', (opciones) => planes.aplicarAumento(opciones));
+manejar('planes:listar', 'sesion', (opciones) => planes.listarPlanes(opciones));
+manejar('planes:crear', 'admin', (datos) => planes.crearPlan(datos));
+manejar('planes:actualizar', 'admin', (id, datos) => planes.actualizarPlan(id, datos));
+manejar('planes:cambiar-estado', 'admin', (id, activo) => planes.cambiarEstadoPlan(id, activo));
+manejar('planes:calcular-aumento', 'admin', (opciones) => planes.calcularAumento(opciones));
+manejar('planes:aplicar-aumento', 'admin', (opciones) => planes.aplicarAumento(opciones));
 
 // ---------- Socios ----------
-manejar('socios:listar', (filtros) => socios.listarSocios(filtros));
-manejar('socios:obtener', (id) => socios.obtenerSocio(id));
-manejar('socios:crear', (datos) => socios.crearSocio(datos));
-manejar('socios:actualizar', (id, datos) => socios.actualizarSocio(id, datos));
-manejar('socios:cambiar-estado', (id, activo) => socios.cambiarEstadoSocio(id, activo));
+manejar('socios:listar', 'sesion', (filtros) => socios.listarSocios(filtros));
+manejar('socios:obtener', 'sesion', (id) => socios.obtenerSocio(id));
+manejar('socios:crear', 'sesion', (datos) => socios.crearSocio(datos));
+manejar('socios:actualizar', 'sesion', (id, datos) => socios.actualizarSocio(id, datos));
+manejar('socios:cambiar-estado', 'admin', (id, activo) => socios.cambiarEstadoSocio(id, activo));
 
 // ---------- Pagos ----------
-manejar('pagos:registrar', (datos) => pagos.registrarPago(datos));
-manejar('pagos:anular', (id) => pagos.anularPago(id));
-manejar('pagos:de-socio', (socioId) => pagos.listarPagosDeSocio(socioId));
-manejar('pagos:resumen-mes', (mes) => pagos.resumenDelMes(mes));
+manejar('pagos:registrar', 'sesion', (datos) => pagos.registrarPago(datos, sesion.sesionActual().id));
+manejar('pagos:anular', 'admin', (id) => pagos.anularPago(id, sesion.sesionActual().id));
+manejar('pagos:de-socio', 'sesion', (socioId) => pagos.listarPagosDeSocio(socioId));
+manejar('pagos:resumen-mes', 'admin', (mes) => pagos.resumenDelMes(mes));
 
 // ---------- Asistencias (control de ingreso) ----------
-manejar('asistencias:registrar', (entrada) => asistencias.registrarIngreso(entrada));
-manejar('asistencias:hoy', () => asistencias.ingresosDeHoy());
-manejar('asistencias:eliminar', (id) => asistencias.eliminarIngreso(id));
-manejar('asistencias:de-socio', (socioId) => asistencias.resumenAsistenciaSocio(socioId));
+manejar('asistencias:registrar', 'sesion', (entrada) => asistencias.registrarIngreso(entrada));
+manejar('asistencias:hoy', 'sesion', () => asistencias.ingresosDeHoy());
+manejar('asistencias:eliminar', 'sesion', (id) => asistencias.eliminarIngreso(id));
+manejar('asistencias:de-socio', 'sesion', (socioId) => asistencias.resumenAsistenciaSocio(socioId));
 
 // ---------- Resumen y configuración ----------
-manejar('resumen:obtener', () => resumen.obtenerResumen());
-manejar('configuracion:obtener', () => configuracion.obtenerConfiguracion());
-manejar('configuracion:guardar', (datos) => configuracion.guardarConfiguracion(datos));
+manejar('resumen:obtener', 'admin', () => resumen.obtenerResumen());
+manejar('configuracion:obtener', 'libre', () => configuracion.obtenerConfiguracion());
+manejar('configuracion:guardar', 'admin', (datos) => configuracion.guardarConfiguracion(datos));
 
 // ---------- WhatsApp ----------
 // La ventana solo manda el id del socio y el texto. El teléfono lo busca el main en la
 // base y el enlace lo arma el main: así la ventana no puede abrir cualquier dirección.
-manejar('sistema:whatsapp', async (socioId, mensaje) => {
+manejar('sistema:whatsapp', 'sesion', async (socioId, mensaje) => {
   const socio = socios.obtenerSocio(socioId);
   await shell.openExternal(armarEnlaceWhatsApp(socio.telefono, mensaje));
   return true;
 });
 
 // ---------- Copias de seguridad ----------
-manejar('copias:listar', () => copias.listarCopias());
-manejar('copias:hacer', () => copias.hacerCopia('manual'));
+manejar('copias:listar', 'admin', () => copias.listarCopias());
+manejar('copias:hacer', 'admin', () => copias.hacerCopia('manual'));
 
-manejar('copias:elegir-carpeta', async () => {
+manejar('copias:elegir-carpeta', 'admin', async () => {
   const resultado = await dialog.showOpenDialog(ventana, {
     title: 'Elegí dónde guardar las copias de seguridad',
     defaultPath: copias.carpetaDeCopias(),
@@ -97,7 +131,7 @@ manejar('copias:elegir-carpeta', async () => {
 
 // Restaurar: la ventana manda el nombre de una copia de la lista,
 // o null para elegir un archivo con el diálogo de Windows.
-manejar('copias:restaurar', async (nombre) => {
+manejar('copias:restaurar', 'admin', async (nombre) => {
   let ruta;
   if (nombre) {
     ruta = copias.rutaDeCopia(nombre);
@@ -139,14 +173,14 @@ manejar('copias:restaurar', async (nombre) => {
 });
 
 // ---------- Información del sistema (para Ajustes y soporte técnico) ----------
-manejar('sistema:info', () => ({
+manejar('sistema:info', 'admin', () => ({
   versionPrograma: app.getVersion(),
   versionBase: conexion.VERSION_BASE,
   carpetaDatos: app.getPath('userData'),
 }));
 
 // ---------- Confirmación genérica ----------
-manejar('dialogo:confirmar', async (opciones) => {
+manejar('dialogo:confirmar', 'sesion', async (opciones) => {
   const { titulo = 'Confirmar', mensaje = '¿Seguro?', detalle = '', boton = 'Aceptar' } =
     opciones ?? {};
 

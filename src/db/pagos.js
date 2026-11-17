@@ -41,7 +41,7 @@ function limpiarPago(datos) {
   return pago;
 }
 
-function registrarPago(datos) {
+function registrarPago(datos, usuarioId = null) {
   const pago = limpiarPago(datos);
   const db = obtenerDb();
 
@@ -74,11 +74,11 @@ function registrarPago(datos) {
     const resultado = db
       .prepare(
         `INSERT INTO pagos (socio_id, plan_id, plan_nombre, monto_centavos, metodo,
-                            fecha_pago, cubre_desde, cubre_hasta, notas)
+                            fecha_pago, cubre_desde, cubre_hasta, notas, usuario_id)
          VALUES (@socioId, @planId, @planNombre, @montoCentavos, @metodo,
-                 @fechaPago, @cubreDesde, @cubreHasta, @notas)`
+                 @fechaPago, @cubreDesde, @cubreHasta, @notas, @usuarioId)`
       )
-      .run({ ...pago, planNombre: plan.nombre, cubreHasta: hasta });
+      .run({ ...pago, planNombre: plan.nombre, cubreHasta: hasta, usuarioId });
 
     // Si pagó un plan distinto al que tenía, queda anotado en el nuevo
     db.prepare('UPDATE socios SET plan_id = ? WHERE id = ?').run(plan.id, socio.id);
@@ -92,7 +92,7 @@ function registrarPago(datos) {
 
 // Anular NO borra: el pago queda registrado (para el control de caja)
 // y el vencimiento del socio se recalcula sin contarlo.
-function anularPago(id) {
+function anularPago(id, usuarioId = null) {
   validarId(id);
   const db = obtenerDb();
 
@@ -102,8 +102,9 @@ function anularPago(id) {
     if (pago.anulado) throw new Error('Ese pago ya estaba anulado');
 
     db.prepare(
-      `UPDATE pagos SET anulado = 1, anulado_en = datetime('now', 'localtime') WHERE id = ?`
-    ).run(id);
+      `UPDATE pagos SET anulado = 1, anulado_en = datetime('now', 'localtime'),
+                        anulado_por = ? WHERE id = ?`
+    ).run(usuarioId, id);
     recalcularVencimiento(pago.socio_id);
 
     return { id };
@@ -116,9 +117,11 @@ function listarPagosDeSocio(socioId) {
   validarId(socioId, 'Socio');
   return obtenerDb()
     .prepare(
-      `SELECT * FROM pagos
-       WHERE socio_id = ?
-       ORDER BY fecha_pago DESC, id DESC
+      `SELECT p.*, u.nombre AS cobrado_por
+       FROM pagos p
+       LEFT JOIN usuarios u ON u.id = p.usuario_id
+       WHERE p.socio_id = ?
+       ORDER BY p.fecha_pago DESC, p.id DESC
        LIMIT 12`
     )
     .all(socioId);
@@ -135,9 +138,12 @@ function resumenDelMes(mes) {
 
   const pagos = db
     .prepare(
-      `SELECT p.*, s.nombre || ' ' || s.apellido AS socio
+      `SELECT p.*, s.nombre || ' ' || s.apellido AS socio,
+              u.nombre AS cobrado_por, a.nombre AS anulado_por_nombre
        FROM pagos p
        JOIN socios s ON s.id = p.socio_id
+       LEFT JOIN usuarios u ON u.id = p.usuario_id
+       LEFT JOIN usuarios a ON a.id = p.anulado_por
        WHERE p.fecha_pago BETWEEN @desde AND @hasta
        ORDER BY p.fecha_pago DESC, p.id DESC`
     )

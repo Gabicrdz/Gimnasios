@@ -3,6 +3,16 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
+  // Acceso: usuarios, PIN y sesión
+  estadoSesion: () => ipcRenderer.invoke('sesion:estado'),
+  entrar: (usuarioId, pin) => ipcRenderer.invoke('sesion:entrar', usuarioId, pin),
+  crearAdministrador: (datos) => ipcRenderer.invoke('sesion:crear-admin', datos),
+  salir: () => ipcRenderer.invoke('sesion:salir'),
+  cambiarMiPin: (pinActual, pinNuevo) => ipcRenderer.invoke('sesion:cambiar-pin', pinActual, pinNuevo),
+  listarUsuarios: () => ipcRenderer.invoke('usuarios:listar'),
+  guardarUsuario: (id, datos) => ipcRenderer.invoke('usuarios:guardar', id ?? null, datos),
+  cambiarEstadoUsuario: (id, activo) => ipcRenderer.invoke('usuarios:cambiar-estado', id, activo),
+
   // Planes
   listarPlanes: (opciones) => ipcRenderer.invoke('planes:listar', opciones),
   crearPlan: (datos) => ipcRenderer.invoke('planes:crear', datos),

@@ -1459,3 +1459,146 @@ input[type='checkbox'] {
   border: 1px solid var(--linea);
   border-radius: var(--radio);
 }
+
+/* ========== Acceso: usuarios y PIN (proyecto 9) ========== */
+.acceso {
+  position: fixed;
+  inset: 0;
+  z-index: 100; /* por encima de todo el sistema */
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  background: var(--tinta);
+}
+
+.acceso-caja {
+  width: min(460px, 92vw);
+  padding: 36px 36px 32px;
+  border-radius: 14px;
+  background: var(--superficie);
+  text-align: center;
+}
+
+.acceso-logo {
+  margin: 0 auto 14px;
+  width: 56px;
+  height: 56px;
+  font-size: 1.1rem;
+}
+
+.acceso-caja h1 {
+  margin-bottom: 22px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.acceso-caja h2 {
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.acceso-form {
+  text-align: left;
+}
+
+.acceso-form > .texto-tenue {
+  margin-bottom: 16px;
+  font-size: 0.86rem;
+}
+
+.acceso-form > label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.acceso-form > input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  font: inherit;
+  font-size: 1.4rem;
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+.acceso-usuarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.acceso-usuario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  cursor: pointer;
+}
+
+.acceso-usuario:hover,
+.acceso-usuario:focus-visible {
+  border-color: var(--acento);
+  background: var(--acento-fondo);
+}
+
+.acceso-usuario small {
+  color: var(--texto-tenue);
+  font-size: 0.74rem;
+}
+
+.acceso-usuario .avatar {
+  margin-bottom: 4px;
+}
+
+/* Usuario y "Salir" a la derecha de la barra superior */
+.barra-usuario {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.usuario-datos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+}
+
+.usuario-datos strong {
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.usuario-datos small {
+  color: #8f98a3;
+  font-size: 0.72rem;
+}
+
+.barra-boton {
+  padding: 7px 12px;
+  border: 1px solid #3a424d;
+  border-radius: var(--radio-chico);
+  background: transparent;
+  color: #cfd5dc;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.barra-boton:hover {
+  background: var(--tinta-clara);
+  color: #fff;
+}

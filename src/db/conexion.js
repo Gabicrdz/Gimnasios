@@ -119,6 +119,27 @@ const MIGRACIONES = [
     }
   },
 
+  // ===== Versión 5 (proyecto 9): usuarios con PIN y quién cobró cada pago =====
+  () => {
+    db.exec(`
+      CREATE TABLE usuarios (
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre    TEXT NOT NULL COLLATE NOCASE,
+        rol       TEXT NOT NULL CHECK (rol IN ('admin', 'recepcion')),
+        pin_hash  TEXT NOT NULL,
+        pin_sal   TEXT NOT NULL,
+        activo    INTEGER NOT NULL DEFAULT 1,
+        creado_en TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+      );
+
+      -- Quién registró y quién anuló cada pago (los pagos viejos quedan en NULL)
+      ALTER TABLE pagos ADD COLUMN usuario_id INTEGER REFERENCES usuarios(id);
+      ALTER TABLE pagos ADD COLUMN anulado_por INTEGER REFERENCES usuarios(id);
+    `);
+    // No se crea ningún usuario: en el primer arranque el sistema pide crear al administrador
+    // (así ninguna instalación sale con un PIN conocido como "1234").
+  },
+
   // Las próximas migraciones van acá abajo.
 ];
 

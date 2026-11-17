@@ -19,6 +19,8 @@ function iniciarSistema() {
     resumen: cargar('db/resumen'),
     configuracion: cargar('db/configuracion'),
     copias: cargar('db/copias'),
+    usuarios: cargar('db/usuarios'),
+    sesion: cargar('sesion'),
   };
 }
 

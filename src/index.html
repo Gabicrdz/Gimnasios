@@ -18,6 +18,55 @@
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
+    <!-- ===== Acceso: primer uso y PIN (tapa todo el sistema hasta entrar) ===== -->
+    <div id="acceso" class="acceso" hidden>
+      <div class="acceso-caja">
+        <span id="acceso-logo" class="logo acceso-logo">MG</span>
+        <h1 id="acceso-nombre">Mi Gimnasio</h1>
+
+        <form id="form-primer-uso" class="acceso-form" autocomplete="off" hidden>
+          <h2>Primer uso</h2>
+          <p class="texto-tenue">
+            Creá al administrador (el dueño). Con su PIN se entra a todo el sistema, así que elegí
+            uno que solo vos sepas.
+          </p>
+          <div class="campo">
+            <label for="primer-nombre">Tu nombre</label>
+            <input id="primer-nombre" name="nombre" type="text" maxlength="40" required />
+          </div>
+          <div class="fila">
+            <div class="campo">
+              <label for="primer-pin">PIN (4 a 6 números)</label>
+              <input id="primer-pin" name="pin" type="password" inputmode="numeric" maxlength="6" required />
+            </div>
+            <div class="campo">
+              <label for="primer-pin2">Repetí el PIN</label>
+              <input id="primer-pin2" name="pin2" type="password" inputmode="numeric" maxlength="6" required />
+            </div>
+          </div>
+          <p id="error-primer-uso" class="error-form" role="alert"></p>
+          <button class="boton boton-primario boton-ancho" type="submit">Crear y entrar</button>
+        </form>
+
+        <div id="acceso-ingreso" hidden>
+          <h2>¿Quién sos?</h2>
+          <div id="acceso-usuarios" class="acceso-usuarios"></div>
+
+          <form id="form-pin" class="acceso-form" autocomplete="off" hidden>
+            <label for="acceso-pin" id="acceso-eligio">PIN</label>
+            <input id="acceso-pin" name="pin" type="password" inputmode="numeric" maxlength="6" required />
+            <p id="error-pin" class="error-form" role="alert"></p>
+            <div class="acciones">
+              <button class="boton boton-primario" type="submit">Entrar</button>
+              <button id="btn-otro-usuario" class="boton boton-secundario" type="button">
+                Cambiar de usuario
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <div class="app">
       <!-- ===== Barra superior ===== -->
       <header class="barra">
@@ -31,12 +80,20 @@
         </div>
         <nav class="pestanas" aria-label="Secciones">
           <button class="nav-boton" type="button" data-vista="ingreso">Ingreso</button>
-          <button class="nav-boton" type="button" data-vista="resumen">Resumen</button>
+          <button class="nav-boton" type="button" data-vista="resumen" data-solo-admin>Resumen</button>
           <button class="nav-boton" type="button" data-vista="socios">Socios</button>
-          <button class="nav-boton" type="button" data-vista="pagos">Pagos</button>
-          <button class="nav-boton" type="button" data-vista="planes">Planes</button>
-          <button class="nav-boton" type="button" data-vista="ajustes">Ajustes</button>
+          <button class="nav-boton" type="button" data-vista="pagos" data-solo-admin>Pagos</button>
+          <button class="nav-boton" type="button" data-vista="planes" data-solo-admin>Planes</button>
+          <button class="nav-boton" type="button" data-vista="ajustes" data-solo-admin>Ajustes</button>
         </nav>
+        <div class="barra-usuario">
+          <span class="usuario-datos">
+            <strong id="usuario-nombre"></strong>
+            <small id="usuario-rol"></small>
+          </span>
+          <button id="btn-mi-pin" class="barra-boton" type="button">Mi PIN</button>
+          <button id="btn-salir" class="barra-boton" type="button" title="Bloquear el sistema">Salir</button>
+        </div>
       </header>
 
       <main class="contenido">
@@ -79,7 +136,7 @@
         </section>
 
         <!-- ===== Vista: Resumen (para el dueño) ===== -->
-        <section id="vista-resumen" class="vista" hidden>
+        <section id="vista-resumen" class="vista" data-solo-admin hidden>
           <header class="encabezado-vista">
             <h1>Resumen</h1>
             <p id="resumen-fecha" class="reloj"></p>
@@ -204,7 +261,7 @@
         </section>
 
         <!-- ===== Vista: Pagos ===== -->
-        <section id="vista-pagos" class="vista" hidden>
+        <section id="vista-pagos" class="vista" data-solo-admin hidden>
           <header class="encabezado-vista">
             <h1>Pagos</h1>
             <label class="campo-mes">
@@ -237,6 +294,7 @@
                   <th>Plan</th>
                   <th>Período</th>
                   <th>Medio</th>
+                  <th>Cobró</th>
                   <th class="derecha">Monto</th>
                   <th></th>
                 </tr>
@@ -248,7 +306,7 @@
         </section>
 
         <!-- ===== Vista: Planes ===== -->
-        <section id="vista-planes" class="vista" hidden>
+        <section id="vista-planes" class="vista" data-solo-admin hidden>
           <header class="encabezado-vista">
             <h1>Planes</h1>
             <div class="acciones-encabezado">
@@ -284,7 +342,7 @@
           </div>
         </section>
         <!-- ===== Vista: Ajustes ===== -->
-        <section id="vista-ajustes" class="vista" hidden>
+        <section id="vista-ajustes" class="vista" data-solo-admin hidden>
           <header class="encabezado-vista">
             <h1>Ajustes</h1>
           </header>
@@ -308,6 +366,33 @@
               <dl id="info-sistema" class="lista-datos lista-sistema"></dl>
             </article>
           </div>
+
+          <article class="panel">
+            <div class="panel-encabezado">
+              <h2>Usuarios</h2>
+              <button id="btn-nuevo-usuario" class="boton boton-primario" type="button">
+                Nuevo usuario
+              </button>
+            </div>
+            <p class="texto-tenue">
+              El administrador (dueño) ve y hace todo. Recepción puede registrar ingresos, cargar
+              y editar socios y cobrar cuotas, pero no ve la recaudación, no anula pagos, no
+              cambia precios ni toca los ajustes.
+            </p>
+            <div class="panel-tabla">
+              <table class="tabla">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="tabla-usuarios"></tbody>
+              </table>
+            </div>
+          </article>
 
           <article class="panel">
             <div class="panel-encabezado">
@@ -353,6 +438,61 @@
         </section>
       </main>
     </div>
+
+    <!-- ===== Diálogo: usuario ===== -->
+    <dialog id="dialogo-usuario" class="dialogo">
+      <form id="form-usuario" autocomplete="off">
+        <h2 id="titulo-usuario">Nuevo usuario</h2>
+        <div class="campo">
+          <label for="usuario-campo-nombre">Nombre</label>
+          <input id="usuario-campo-nombre" name="nombre" type="text" maxlength="40" required />
+        </div>
+        <div class="campo">
+          <label for="usuario-campo-rol">Tipo</label>
+          <select id="usuario-campo-rol" name="rol">
+            <option value="recepcion">Recepción</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="usuario-campo-pin" id="etiqueta-usuario-pin">PIN (4 a 6 números)</label>
+          <input id="usuario-campo-pin" name="pin" type="password" inputmode="numeric" maxlength="6" />
+        </div>
+        <p id="error-usuario" class="error-form" role="alert"></p>
+        <div class="acciones">
+          <button class="boton boton-primario" type="submit">Guardar</button>
+          <button id="btn-cancelar-usuario" class="boton boton-secundario" type="button">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===== Diálogo: cambiar mi PIN ===== -->
+    <dialog id="dialogo-mi-pin" class="dialogo">
+      <form id="form-mi-pin" autocomplete="off">
+        <h2>Cambiar mi PIN</h2>
+        <div class="campo">
+          <label for="mipin-actual">PIN actual</label>
+          <input id="mipin-actual" name="actual" type="password" inputmode="numeric" maxlength="6" required />
+        </div>
+        <div class="fila">
+          <div class="campo">
+            <label for="mipin-nuevo">PIN nuevo</label>
+            <input id="mipin-nuevo" name="nuevo" type="password" inputmode="numeric" maxlength="6" required />
+          </div>
+          <div class="campo">
+            <label for="mipin-nuevo2">Repetilo</label>
+            <input id="mipin-nuevo2" name="nuevo2" type="password" inputmode="numeric" maxlength="6" required />
+          </div>
+        </div>
+        <p id="error-mi-pin" class="error-form" role="alert"></p>
+        <div class="acciones">
+          <button class="boton boton-primario" type="submit">Cambiar PIN</button>
+          <button id="btn-cancelar-mi-pin" class="boton boton-secundario" type="button">Cancelar</button>
+        </div>
+      </form>
+    </dialog>
 
     <!-- ===== Diálogo: socio ===== -->
     <dialog id="dialogo-socio" class="dialogo dialogo-ancho">
@@ -603,11 +743,13 @@
     <!-- Orden: utilidades → app (navegación) → vistas -->
     <script src="ui/utilidades.js"></script>
     <script src="ui/app.js"></script>
+    <script src="ui/acceso.js"></script>
     <script src="ui/vista-ingreso.js"></script>
     <script src="ui/vista-resumen.js"></script>
     <script src="ui/vista-socios.js"></script>
     <script src="ui/vista-pagos.js"></script>
     <script src="ui/vista-planes.js"></script>
+    <script src="ui/vista-usuarios.js"></script>
     <script src="ui/vista-ajustes.js"></script>
   </body>
 </html>

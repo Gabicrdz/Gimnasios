@@ -6,8 +6,35 @@ const vistas = {};
 // Ajustes del sistema (se cargan de la base al arrancar)
 let configuracion = { nombre_gimnasio: 'Mi Gimnasio' };
 
+// ---------- Sesión ----------
+// Quién está usando el sistema ({ id, nombre, rol }). La seguridad de verdad está en el main
+// (cada canal revisa el permiso); acá solo escondemos lo que esa persona no puede usar.
+let sesion = null;
+
+function esAdmin() {
+  return sesion?.rol === 'admin';
+}
+
+const NOMBRE_ROL = { admin: 'Administrador', recepcion: 'Recepción' };
+
+function entrarAlSistema(usuario) {
+  sesion = usuario;
+  document.getElementById('usuario-nombre').textContent = usuario.nombre;
+  document.getElementById('usuario-rol').textContent = NOMBRE_ROL[usuario.rol] ?? usuario.rol;
+  for (const boton of document.querySelectorAll('button[data-solo-admin]')) {
+    boton.hidden = !esAdmin();
+  }
+  document.getElementById('acceso').hidden = true;
+  vigilarInactividad(true);
+  mostrarVista('ingreso');
+}
+
 // ---------- Navegación ----------
 function mostrarVista(nombre) {
+  // Defensa extra: recepción no entra a una pantalla de administración aunque la pidan por código
+  const destino = document.getElementById(`vista-${nombre}`);
+  if (destino?.hasAttribute('data-solo-admin') && !esAdmin()) return;
+
   for (const seccion of document.querySelectorAll('.vista')) {
     seccion.hidden = seccion.id !== `vista-${nombre}`;
   }
@@ -142,7 +169,9 @@ function inicialesGimnasio(nombre) {
 function aplicarMarca() {
   const nombre = configuracion.nombre_gimnasio;
   document.querySelector('.marca strong').textContent = nombre;
-  document.querySelector('.logo').textContent = inicialesGimnasio(nombre);
+  document.querySelector('.marca .logo').textContent = inicialesGimnasio(nombre);
+  document.getElementById('acceso-nombre').textContent = nombre;
+  document.getElementById('acceso-logo').textContent = inicialesGimnasio(nombre);
   document.title = nombre;
 }
 
@@ -157,5 +186,5 @@ async function cargarConfiguracion() {
 // la pantalla de Ingreso, que es la que queda abierta en la recepción.
 document.addEventListener('DOMContentLoaded', async () => {
   await cargarConfiguracion();
-  mostrarVista('ingreso');
+  await iniciarAcceso(); // pide el PIN (o crear al administrador) y recién ahí abre Ingreso
 });

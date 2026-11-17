@@ -24,7 +24,7 @@
   async function cargar() {
     formNombre.elements.nombre.value = configuracion.nombre_gimnasio;
     errorNombre.textContent = '';
-    await Promise.all([cargarCopias(), cargarInfo()]);
+    await Promise.all([cargarCopias(), cargarInfo(), vistas.usuarios.alMostrar()]);
   }
 
   // ---------- Nombre del gimnasio ----------
